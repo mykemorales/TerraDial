@@ -429,6 +429,23 @@
     transition: opacity 300ms var(--ease-out);
   }
   #intro > div { transition: transform 300ms var(--ease-out); }
+  /* The intro arrives in order: logo mark, wordmark, tagline, button. This is the
+     stagger from the motion notes (RECIPES.md, SKILL.md): each piece fades in and
+     rises 8px on the shared ease-out, a beat after the one before. The gap is
+     deliberately wider than the notes suggest so the order is noticeable, and
+     durations run longer than everyday UI, because this is seen once per visit. It never blocks anything: the button is still
+     loading while it plays. */
+  #intro {
+    --in-ms: 560ms;              /* each piece's fade-up */
+    --in-lead: 150ms;            /* a beat for the page to settle first */
+    --in-gap: 150ms;             /* between pieces: wider than the notes' 30-80ms, so the order reads clearly */
+  }
+  #intro > div > * { --in-delay: calc(var(--in-lead) + var(--i, 0) * var(--in-gap)); }
+  @keyframes intro-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes intro-fade { from { opacity: 0; } to { opacity: 1; } }
   #intro.leaving { opacity: 0; pointer-events: none; }
   #intro.leaving > div { transform: scale(0.97); }
   /* logo mark above the wordmark: 13×13 sprite at 6×, pixel-crisp */
@@ -436,23 +453,30 @@
     display: block; width: 78px; height: 78px; margin: 0 auto 12px;   /* close to the wordmark: they read as one logo */
     image-rendering: pixelated; image-rendering: crisp-edges;
     filter: drop-shadow(0 0 12px rgba(94, 242, 255, .35));
-    animation: logo-pulse 3.6s ease-in-out infinite;
+    --i: 0;
+    animation: intro-in var(--in-ms) var(--ease-out) var(--in-delay) both,
+               logo-pulse 3.6s ease-in-out infinite;
   }
   #intro h2 { font-size: 36px; font-weight: 600; letter-spacing: -0.03em; color: var(--cyan);
     text-shadow: 0 0 16px rgba(94,242,255,.4); margin-bottom: 26px;
     -webkit-user-select: none; user-select: none;
-    animation: word-pulse 3.6s ease-in-out infinite; }
+    --i: 1;
+    animation: intro-in var(--in-ms) var(--ease-out) var(--in-delay) both,
+               word-pulse 3.6s ease-in-out infinite; }
   /* a slow, faint breath of light on the logo and wordmark, in step */
+  /* the logo's pulse: a tight glow plus a wide halo that swells out with it */
   @keyframes logo-pulse {
-    0%, 100% { filter: drop-shadow(0 0 12px rgba(94, 242, 255, .35)); }
-    50%      { filter: drop-shadow(0 0 18px rgba(94, 242, 255, .6)) brightness(1.08); }
+    0%, 100% { filter: drop-shadow(0 0 12px rgba(94, 242, 255, .35)) drop-shadow(0 0 24px rgba(94, 242, 255, 0)) brightness(1); }
+    50%      { filter: drop-shadow(0 0 24px rgba(94, 242, 255, .9)) drop-shadow(0 0 80px rgba(94, 242, 255, .55)) brightness(1.16); }
   }
   @keyframes word-pulse {
     0%, 100% { text-shadow: 0 0 16px rgba(94, 242, 255, .4); }
     50%      { text-shadow: 0 0 22px rgba(94, 242, 255, .62); }
   }
   #intro p { color: #c6d4e1; font-size: 14px; line-height: 1.7; max-width: 340px; margin: 0 auto 48px;
-    text-shadow: 0 1px 2px rgba(0,0,0,.6); text-wrap: balance; }
+    text-shadow: 0 1px 2px rgba(0,0,0,.6); text-wrap: balance;
+    --i: 2; animation: intro-in var(--in-ms) var(--ease-out) var(--in-delay) both; }
+  #intro .power-wrap { --i: 3; animation: intro-in var(--in-ms) var(--ease-out) var(--in-delay) both; }
   #power {
     display: inline-flex; align-items: center; justify-content: center; gap: 10px;
     min-height: 48px; font-size: 14px; padding: 0 28px;
@@ -531,6 +555,10 @@
     #intro > div, #intro.leaving > div { transition: none; transform: none; }
     /* the logo and underglow keep their light, without the movement */
     #intro .logo-globe, #intro h2, .power-wrap.ready::before, .power-wrap.ready::after { animation: none; }
+    /* the intro still arrives in order, as a plain fade */
+    #intro .logo-globe, #intro h2, #intro p, #intro .power-wrap {
+      animation: intro-fade var(--in-ms) ease-out var(--in-delay) both;
+    }
   }
 </style>
 </head>
