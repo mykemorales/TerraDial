@@ -451,13 +451,12 @@
   }
   #power.ready:focus-visible { outline-color: var(--cyan); outline-offset: 3px; }
 
-  /* tune-in wave (see waveOut): drawn at half resolution and scaled up, which softens it */
-  #wave { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none; }
-  /* the sparks: a quarter-resolution canvas blown up with hard edges, so each one is a fat pixel */
-  #wavePx {
-    position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none;
-    image-rendering: pixelated; image-rendering: crisp-edges;
-  }
+  /* tune-in wave (see waveOut). Tint and glow are soft, so they're drawn at half
+     resolution and scaled up; the sparks are scaled up with hard edges. */
+  #waveTint, #wave, #wavePx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none; }
+  #waveTint { mix-blend-mode: color; }     /* recolours what's under it, keeps its brightness */
+  #wave { mix-blend-mode: screen; }        /* the band's own light */
+  #wavePx { image-rendering: pixelated; image-rendering: crisp-edges; }
   /* the colour the wave leaves on the screen edges as it goes */
   #waveRim {
     position: fixed; inset: 0; z-index: 11; pointer-events: none; opacity: 0;
@@ -1794,30 +1793,37 @@ if (!RM.matches) spinTimer = setInterval(() => { spinPhase = (spinPhase + 10) % 
 function stopSpin() { clearInterval(spinTimer); spinCanvas.remove(); }
 
 /* ---------- tune-in wave ----------
-   A web take on Libraries.dev's Distortion Waves (its "center" type), in two beats.
-   1. Warp bubble (slow): a clear glass bubble swells out of the touch point.
-      Seen through it, the button and text are magnified and bent like a lens;
-      just outside it they bulge away, and pixel sparks get drawn in toward its rim.
-   2. Wave (fast): the bubble bursts into a ring in the genre colours that
-      accelerates off the screen, carrying the intro away. The sparks ride out
-      on its front, the colour lingers on the screen edges, and the crosshair
-      answers with one ping. Reduced motion: the plain fade. */
-const WAVE_COLORS = ['#5ef2ff', '#b69cff', '#ff5edb', '#ff5e6c', '#ff8a3d', '#ffd166', '#b8ff5e', '#3dffb0', '#5ef2ff'];
-const WAVE_BUBBLE = 650;         // ms: the bubble swells (the slow part)
-const WAVE_TRAVEL = 950;         // ms: the ring ramps up and clears the screen
-const WAVE_LINGER = 650;         // ms the edge colour hangs on afterwards
-const BUBBLE_R = 78;             // px: the bubble's size before it bursts
-const LENS_REACH = 1.6;          // the bulge reaches out to 1.6× the bubble's radius
-const LENS_POWER = 0.6;          // how hard the glass bends what's behind it
+   Modelled on a light-wave shader demo: no glass, no bend, just light.
+   1. Press: a small soft glow gathers under the button. Slide off and it fades.
+   2. Release (the click): a wide, soft band of light launches from the button's
+      centre. Its colours run through its thickness: warm yellow and orange on
+      the leading edge, pink and magenta behind, violet, then a cyan tail that
+      fades to nothing. It covers most of the screen almost at once, then
+      glides to the edges and settles there as a fading rim of colour.
+      Whatever the front passes over (logo, title, tagline, button, globe) is
+      briefly recoloured in the wave's colours, and the intro fades out behind
+      the band. Dithered pixel sparks ride the front: long streaks at launch,
+      slowing with it. Reduced motion: the plain fade. */
+const WAVE_TIME = 1150;          // ms from release until the band has settled at the edges
+const WAVE_FAST = 3.2;           // launch sharpness: about 70% of the way in the first 350 ms
+const WAVE_LINGER = 550;         // ms the edge colour hangs on afterwards
+const SEED_R = 30;               // px: the glow under the button while it's pressed
 const SPARK_PX = 2;              // px per spark pixel: fine grain
 // 4×4 ordered (Bayer) dither: a spark fades by losing pixels, not by going see-through
 const BAYER4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16);
-// Safari can't reliably run an SVG displacement filter on HTML, so there the
-// bubble is plain clear glass without the lens bend; everything else is the same
-const WARP_OK = !('GestureEvent' in window);
+const SPARK_COLORS = ['#ffd166', '#ff8a3d', '#ff5edb', '#ff5e6c', '#b69cff', '#5ef2ff', '#ffffff'];
+// the band, front to back: [position from the front (0) to the tail (1), colour, alpha]
+const BAND = [
+  [-0.15, '255, 209, 102', 0],      // just ahead of the front: nothing yet
+  [0, '255, 209, 102', 0.9],        // yellow leading edge
+  [0.1, '255, 138, 61', 1],         // orange
+  [0.28, '255, 94, 219', 0.9],      // magenta
+  [0.5, '182, 156, 255', 0.7],      // violet
+  [0.75, '94, 242, 255', 0.32],     // cyan tail
+  [1, '94, 242, 255', 0]            // gone
+];
 const clamp01 = v => Math.min(1, Math.max(0, v));
-const easeInOut = p => p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-const easeOutBack = p => 1 + 2.4 * Math.pow(p - 1, 3) + 1.4 * Math.pow(p - 1, 2); // a little overshoot: bubbly
+const smooth = (a, b, v) => { const x = clamp01((v - a) / (b - a)); return x * x * (3 - 2 * x); };
 
 function fadeIntro(intro) {
   intro.classList.add('leaving');
@@ -1826,238 +1832,190 @@ function fadeIntro(intro) {
   setTimeout(done, 400);         // fallback if the transition is skipped
 }
 
-// Lens map for the bubble, drawn once as a square and stretched over the bubble
-// each frame. Inside the glass, pixels sample from nearer the centre (magnified,
-// squeezed back to normal at the rim, like a ball of glass); just outside, from
-// a little further in, so the text there bulges away from the bubble.
-// Red/green = x/y offset, 128 = none.
-function lensMapUrl() {
-  const N = 192, half = N / 2, edge = half / LENS_REACH;   // the bubble's rim, in map pixels
-  const c = document.createElement('canvas');
-  c.width = c.height = N;
-  const x = c.getContext('2d'), im = x.createImageData(N, N), d = im.data;
-  for (let py = 0, i = 0; py < N; py++) for (let px = 0; px < N; px++, i += 4) {
-    const dx = px + 0.5 - half, dy = py + 0.5 - half, dist = Math.hypot(dx, dy), n = dist / edge;
-    let u = 0;                                               // pull toward the centre, 0..1
-    if (n < 1) u = 2 * n * Math.sqrt(1 - n * n);             // glass: peaks at n ≈ 0.7
-    else if (n < LENS_REACH) u = 1.6 * (n - 1) * Math.exp(-4 * (n - 1)) * (1 - (n - 1) / (LENS_REACH - 1)); // soft bulge, gone by the edge
-    const k = dist ? u / dist * edge : 0;
-    d[i] = 128 - dx / edge * k * 127;
-    d[i + 1] = 128 - dy / edge * k * 127;
-    d[i + 2] = 128; d[i + 3] = 255;
+// Starts the press glow. Returns { commit, cancel }: commit() launches the
+// wave; cancel() fades the glow away and leaves the intro as it was.
+function waveOut(intro, src) {
+  const b = src.getBoundingClientRect();
+  const cx = b.left + b.width / 2, cy = b.top + b.height / 2;   // always the button's centre
+  if (RM.matches || !intro.animate) {
+    return { commit() { intro.style.pointerEvents = 'none'; fadeIntro(intro); }, cancel() {} };
   }
-  x.putImageData(im, 0, 0);
-  return c.toDataURL();
-}
-
-function waveOut(intro, src, cx, cy) {
-  if (RM.matches || !intro.animate) { fadeIntro(intro); return; }
   const W = innerWidth, H = innerHeight;
-  const maxR = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) + 240; // band fully off-screen
-  const inner = intro.firstElementChild;
-  intro.style.pointerEvents = 'none';
+  const corner = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy));
+  const globeEl = $('globe');
 
-  // the colour band, at CSS-pixel resolution so the bubble's hairlines stay crisp
-  const S = 1;
-  const cv = document.createElement('canvas');
-  cv.id = 'wave';
-  cv.width = Math.ceil(W * S); cv.height = Math.ceil(H * S);
-  const g = cv.getContext('2d');
-  // the sparks: a low-resolution canvas scaled up with hard edges, so every dot is a true pixel
-  const pc = document.createElement('canvas');
-  pc.id = 'wavePx';
-  pc.width = Math.ceil(W / SPARK_PX); pc.height = Math.ceil(H / SPARK_PX);
-  const pg = pc.getContext('2d');
-  const rim = document.createElement('div');
-  rim.id = 'waveRim';
-  document.body.append(cv, pc, rim);
+  // Three layers over everything:
+  //   tint  — blend mode "color": takes on the band's hue but keeps the
+  //           brightness of what's underneath, so the bright logo, text and
+  //           button turn wave-coloured while the dark background stays dark
+  //   glow  — blend mode "screen": the band's own light
+  //   px    — the dithered sparks, hard-edged
+  // tint and glow are soft, so they're drawn at half resolution.
+  const S = 0.5;
+  const layer = (id, scale) => {
+    const c = document.createElement('canvas');
+    c.id = id;
+    c.width = Math.ceil(W * scale); c.height = Math.ceil(H * scale);
+    const x = c.getContext('2d');
+    x.setTransform(scale, 0, 0, scale, 0, 0);
+    return [c, x];
+  };
+  const [tc, tg] = layer('waveTint', S);
+  const [gc, gg] = layer('wave', S);
+  const [pc, pg] = layer('wavePx', 1 / SPARK_PX);
+  pg.setTransform(1, 0, 0, 1, 0, 0);               // sparks work in pixel cells directly
+  document.body.append(tc, gc, pc);
 
-  // sparks: drawn in toward the bubble, then flung out on the wave front
-  const sparks = Array.from({ length: 140 }, () => ({
+  const sparks = Array.from({ length: 150 }, () => ({
     a: Math.random() * Math.PI * 2,
-    gather: 40 + Math.random() * 150,              // how far out they start
-    off: (Math.random() - 0.35) * 70,               // where they ride on the front
-    weight: 0.55 + Math.random() * 0.45,          // how dense its cluster is
-    c: Math.random() < 0.15 ? '#ffffff' : WAVE_COLORS[Math.random() * 8 | 0],
-    life: 0.4 + Math.random() * 0.55,
+    off: (Math.random() - 0.75) * 0.45,             // where on the band, × its width (mostly just behind the front)
+    weight: 0.5 + Math.random() * 0.5,
+    c: SPARK_COLORS[Math.random() * SPARK_COLORS.length | 0],
+    life: 0.45 + Math.random() * 0.5,
     blink: Math.random() * 1000
   }));
 
-  // the lens (see lensMapUrl): the map sits on a neutral flood, so outside it nothing moves
-  const ir = inner.getBoundingClientRect();
-  const bx = cx - ir.left, by = cy - ir.top;
-  let warpEl = null, lensEl = null, svg = null;
-  if (WARP_OK) {
-    const iw = Math.ceil(ir.width), ih = Math.ceil(ir.height);
-    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
-    svg.style.position = 'absolute';
-    svg.innerHTML =
-      `<filter id="tdWarp" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="${iw}" height="${ih}" color-interpolation-filters="sRGB">` +
-      `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
-      `<feImage href="${lensMapUrl()}" x="${bx}" y="${by}" width="0" height="0" preserveAspectRatio="none" result="lens"/>` +
-      `<feComposite in="lens" in2="flat" operator="over" result="map"/>` +
-      `<feDisplacementMap in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>`;
-    document.body.appendChild(svg);
-    warpEl = svg.querySelector('feDisplacementMap');
-    lensEl = svg.querySelector('feImage');
-  }
-
-  // lean in toward the touch while the bubble swells; the button gathers glow
-  inner.style.transformOrigin = `${bx}px ${by}px`;
-  inner.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.97)' }],
-    { duration: WAVE_BUBBLE, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'forwards' });
-  src.animate([
-    { boxShadow: '0 0 24px rgba(94, 242, 255, .35)' },
-    { boxShadow: '0 0 56px 12px rgba(94, 242, 255, .8)' }
-  ], { duration: WAVE_BUBBLE, easing: 'ease-in', fill: 'forwards' });
-  // the globe seen through the bubble is magnified, then settles as the wave carries you in
-  const globeEl = $('globe');
-  globeEl.style.transformOrigin = `${cx}px ${cy}px`;
-  const globeAnim = globeEl.animate([
-    { transform: 'scale(1)', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
-    { transform: 'scale(1.14)', offset: WAVE_BUBBLE / (WAVE_BUBBLE + WAVE_TRAVEL), easing: 'cubic-bezier(0.65, 0, 0.35, 1)' },
-    { transform: 'scale(1)' }
-  ], { duration: WAVE_BUBBLE + WAVE_TRAVEL });
-  globeAnim.onfinish = () => { globeEl.style.transformOrigin = ''; };
-  wakeGlobe(WAVE_BUBBLE + WAVE_TRAVEL + 600);
-
-  // edge colour: comes up as the ring reaches the edges, then lets go
-  const rimAnim = rim.animate([{ opacity: 0 }, { opacity: 0.4, offset: 0.3 }, { opacity: 0 }], {
-    duration: WAVE_TRAVEL * 0.55 + WAVE_LINGER, delay: WAVE_BUBBLE + WAVE_TRAVEL * 0.5,
-    easing: 'ease-out', fill: 'both'
-  });
-  rimAnim.onfinish = () => rim.remove();
-
-  const palette = turn => {
-    if (g.createConicGradient) {
-      const c = g.createConicGradient(turn, cx, cy);
-      WAVE_COLORS.forEach((col, i) => c.addColorStop(i / (WAVE_COLORS.length - 1), col));
-      return c;
+  // the band as a radial gradient: front at R, tail at R - w
+  function drawBand(g, R, w, alpha) {
+    const r0 = Math.max(0, R - w), r1 = R + 0.15 * w;
+    if (r1 <= 0 || alpha <= 0) return;
+    const grad = g.createRadialGradient(cx, cy, r0, cx, cy, r1);
+    const span = r1 - r0;
+    for (const [pos, rgb, a] of BAND) {
+      const r = R - pos * w;
+      grad.addColorStop(clamp01((r - r0) / span), `rgba(${rgb}, ${(a * alpha).toFixed(3)})`);
     }
-    const l = g.createLinearGradient(0, 0, W, H);   // older browsers: a diagonal sweep
-    WAVE_COLORS.forEach((col, i) => l.addColorStop(i / (WAVE_COLORS.length - 1), col));
-    return l;
-  };
-  const circle = (r, color, width, a0 = 0, a1 = Math.PI * 2) => {
-    if (r <= 0) return;
-    g.strokeStyle = color; g.lineWidth = width;
-    g.beginPath(); g.arc(cx, cy, r, a0, a1); g.stroke();
-  };
+    g.fillStyle = grad;
+    const x0 = Math.max(0, cx - r1), y0 = Math.max(0, cy - r1);
+    g.fillRect(x0, y0, Math.min(W, cx + r1) - x0, Math.min(H, cy + r1) - y0);
+  }
+  // the press glow: a small soft bloom of magenta into violet
+  function drawSeed(g, r, alpha) {
+    if (r <= 0.5 || alpha <= 0) return;
+    const grad = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0, `rgba(255, 94, 219, ${(0.85 * alpha).toFixed(3)})`);
+    grad.addColorStop(0.45, `rgba(182, 156, 255, ${(0.5 * alpha).toFixed(3)})`);
+    grad.addColorStop(1, 'rgba(94, 242, 255, 0)');
+    g.fillStyle = grad;
+    g.fillRect(cx - r, cy - r, 2 * r, 2 * r);
+  }
+  const clear = g => { g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, g.canvas.width, g.canvas.height); g.restore(); };
   const cell = v => Math.round(v / SPARK_PX);
 
-  const t0 = performance.now();
-  let finished = false;
+  // the wave's radius over time: shoots out, then glides in to the screen edge
+  const norm = 1 - Math.exp(-WAVE_FAST * WAVE_TIME / 1000);
+  const reach = s => (1 - Math.exp(-WAVE_FAST * s)) / norm;          // 0 → 1 over WAVE_TIME
+  const speed = s => WAVE_FAST * Math.exp(-WAVE_FAST * s) / norm;    // its rate, per second
+
+  let phase = 'press', committed = false, finished = false;
+  let seed = 0, last = performance.now(), launchAt = 0;
+  const savedBackdrop = intro.style.backdropFilter;
+
+  function launch(now) {
+    phase = 'travel';
+    launchAt = now;
+    intro.style.pointerEvents = 'none';
+    // the intro's light blur behind it would fight the mask; the band covers the change
+    intro.style.webkitBackdropFilter = intro.style.backdropFilter = 'none';
+    globeEl.style.transformOrigin = `${cx}px ${cy}px`;
+    wakeGlobe(WAVE_TIME + 600);
+    // edge colour: comes up as the band reaches the edges, then lets go
+    const rim = document.createElement('div');
+    rim.id = 'waveRim';
+    document.body.appendChild(rim);
+    const rimAnim = rim.animate([{ opacity: 0 }, { opacity: 0.45, offset: 0.35 }, { opacity: 0 }], {
+      duration: WAVE_TIME * 0.6 + WAVE_LINGER, delay: WAVE_TIME * 0.4, easing: 'ease-out', fill: 'both'
+    });
+    rimAnim.onfinish = () => rim.remove();
+    setTimeout(finish, WAVE_TIME + 1500);   // if frames stall (hidden tab), still finish
+  }
+
   function step(now) {
     if (finished) return;
-    const t = now - t0;
-    const inBubble = t < WAVE_BUBBLE;
-    const q = clamp01(t / WAVE_BUBBLE);                 // bubble progress
-    const p = clamp01((t - WAVE_BUBBLE) / WAVE_TRAVEL); // wave progress
-    // radius: the bubble swells with a slight wobble, then the ring ramps up
-    // from a standstill and accelerates off the screen
-    const R = inBubble ? BUBBLE_R * easeOutBack(q) : BUBBLE_R + (maxR - BUBBLE_R) * Math.pow(p, 2.3);
-    const w = inBubble ? 3 + R * 0.12 : 55 + 165 * p;  // thin glass shell, then a swelling band
-    const turn = -Math.PI / 2 + (q * 0.6 + p * 1.4);
+    const dt = Math.min(50, now - last);
+    last = now;
+    clear(tg); clear(gg); clear(pg);
 
-    g.setTransform(S, 0, 0, S, 0, 0);
-    g.globalCompositeOperation = 'source-over';
-    g.globalAlpha = 1;
-    g.clearRect(0, 0, W, H);
-    if (R > 1) {
-      // 1. the band's shape: a crisp outer edge, a soft tail inside it
-      const r0 = Math.max(0, R - w), r1 = R + (inBubble ? 4 : w * 0.3);
-      const at = r => clamp01((r - r0) / (r1 - r0));
-      const shape = g.createRadialGradient(cx, cy, r0, cx, cy, r1);
-      shape.addColorStop(0, 'rgba(0,0,0,0)');
-      shape.addColorStop(at(R - w * 0.35), `rgba(0,0,0,${inBubble ? 0.25 : 0.55})`);
-      shape.addColorStop(at(R), 'rgba(0,0,0,1)');
-      shape.addColorStop(1, 'rgba(0,0,0,0)');
-      g.fillStyle = shape;
-      g.fillRect(0, 0, W, H);
-      // 2. fill that shape with the genre colours, slowly turning
-      g.globalCompositeOperation = 'source-in';
-      g.fillStyle = palette(turn);
-      g.fillRect(0, 0, W, H);
-      // 3. chromatic fringe and a bright hairline on the edge
-      g.globalCompositeOperation = 'lighter';
-      // (hairlines on the bubble, a little heavier once it's a wave)
-      const lw = inBubble ? 1 : 1 + 1.5 * p;
-      circle(R + (inBubble ? 2 : 5), 'rgba(94, 242, 255, .4)', lw);
-      circle(R - (inBubble ? 2 : 7), 'rgba(255, 94, 219, .35)', lw);
-      circle(R, 'rgba(255, 255, 255, .55)', inBubble ? 1 : 1.5);
-      // 4. while it's a bubble: a glint of light on the glass
-      if (inBubble) {
-        circle(R * 0.8, `rgba(255, 255, 255, ${(0.6 * q).toFixed(2)})`, 1.25, -2.5, -1.75);
-        circle(R * 0.8, `rgba(255, 255, 255, ${(0.35 * q).toFixed(2)})`, 1.25, -1.6, -1.45);
-      }
+    if (phase !== 'travel') {
+      // press glow: blooms in over ~160 ms, breathes while held, fades on cancel
+      seed = phase === 'press' ? Math.min(1, seed + dt / 160) : Math.max(0, seed - dt / 180);
+      if (phase === 'press' && committed) launch(now);
+      else if (phase === 'fade' && seed <= 0) { teardown(); return; }
+      const e = smooth(0, 1, seed);
+      const breathe = 1 + 0.06 * Math.sin(now / 220) * e;
+      drawSeed(gg, SEED_R * e * breathe, e);
+      drawSeed(tg, SEED_R * 1.6 * e, e);
+      src.style.boxShadow = `0 0 ${(24 + 20 * e).toFixed(1)}px ${(6 * e).toFixed(1)}px rgba(255, 94, 219, ${(0.2 + 0.35 * e).toFixed(2)})`;
+      requestAnimationFrame(step);
+      return;
     }
 
-    // pixel sparks: tiny clusters, ordered-dithered against the screen grid, so
-    // they thin out pixel by pixel as they fade, with a dithered streak behind
-    pg.clearRect(0, 0, pc.width, pc.height);
+    const s = (now - launchAt) / 1000;               // seconds since release
+    const p = clamp01(s * 1000 / WAVE_TIME);
+    const k = Math.min(1, reach(s));
+    const R = (corner + 40) * k;
+    const w = Math.min(320, 70 + 0.45 * R);          // the band widens as it travels
+    const fade = 1 - smooth(0.55, 1, p);             // hands over to the edge colour at the end
+    const seedLeft = 1 - smooth(0, 0.25, p);         // the press glow blends into the launch
+
+    drawSeed(gg, SEED_R * (1 + 2 * p), seedLeft);
+    drawBand(gg, R, w, 0.6 * fade);
+    drawBand(tg, R, w * 1.35, fade);                // the recolouring trails a little longer than the light
+
+    // sparks: streaks as long as the wave is fast, thinning out pixel by pixel
     const dot = (gx, gy, v) => {
       if (v > BAYER4[(gy & 3) * 4 + (gx & 3)]) pg.fillRect(gx, gy, 1, 1);
     };
-    for (const s of sparks) {
-      let r, alpha, dir;
-      if (inBubble) {
-        r = R + 2 + s.gather * (1 - easeInOut(q));     // drawn in toward the rim
-        alpha = Math.min(1, q * 3);
-        dir = 1;                                        // streak points outward
-      } else {
-        const life = p / s.life;
-        if (life >= 1) continue;
-        r = R + s.off;
-        alpha = 1 - life;
-        dir = -1;                                       // streak points back toward the centre
-      }
-      if (r <= 0 || (((t + s.blink) / 90 | 0) % 9) === 0) continue;
-      const v = alpha * s.weight;
-      const cos = Math.cos(s.a), sin = Math.sin(s.a);
+    const v = speed(s) * (corner + 40);              // px per second at the front
+    const len = Math.min(14, 2 + v / 220);
+    for (const sp of sparks) {
+      const life = p / sp.life;
+      if (life >= 1) continue;
+      const r = R + sp.off * w;
+      if (r <= 0 || (((now + sp.blink) / 90 | 0) % 9) === 0) continue;
+      const a = (1 - life) * Math.min(1, life * 8) * sp.weight;
+      const cos = Math.cos(sp.a), sin = Math.sin(sp.a);
       const gx = cell(cx + cos * r), gy = cell(cy + sin * r);
-      pg.fillStyle = s.c;
-      dot(gx, gy, v * 1.6);                             // a 2×2 grain, thinned by the dither
-      dot(gx + 1, gy, v * 0.7); dot(gx, gy + 1, v * 0.7); dot(gx + 1, gy + 1, v * 0.45);
-      const len = inBubble ? 3 : 3 + p * 6;            // streak lengthens as the wave speeds up
-      for (let k = 1; k <= len; k++) {
-        const rr = r + dir * k * SPARK_PX;
-        dot(cell(cx + cos * rr), cell(cy + sin * rr), v * (1 - k / (len + 1)) * 0.8);
+      pg.fillStyle = sp.c;
+      dot(gx, gy, a * 1.6);
+      dot(gx + 1, gy, a * 0.7); dot(gx, gy + 1, a * 0.7); dot(gx + 1, gy + 1, a * 0.45);
+      for (let i = 1; i <= len; i++) {
+        const rr = r - i * SPARK_PX;
+        dot(cell(cx + cos * rr), cell(cy + sin * rr), a * (1 - i / (len + 1)) * 0.8);
       }
     }
 
-    // the bubble is clear glass, so the intro stays whole while it swells. When
-    // it bursts, a hole opens just inside the bright band (the band hides the
-    // cut) and the globe shows through behind the wave
-    const hole = inBubble ? 0 : Math.max(0, R - w * 0.25) * clamp01(p / 0.12);
-    if (hole > 0) {
-      intro.style.clipPath = `path(evenodd, "M0 0H${W}V${H}H0Z M${cx - hole} ${cy}a${hole} ${hole} 0 1 0 ${2 * hole} 0a${hole} ${hole} 0 1 0 ${-2 * hole} 0Z")`;
-    }
-    // the lens grows with the bubble and lets go as it bursts;
-    // ahead of the wave the intro blurs more as it closes in
-    const lensR = inBubble ? Math.max(1, R) : BUBBLE_R;
-    const bulge = lensR * LENS_POWER * (inBubble ? Math.min(1, q * 2.5) : 1 - clamp01(p / 0.2));
-    if (warpEl) {
-      const half = lensR * LENS_REACH;
-      lensEl.setAttribute('x', (bx - half).toFixed(1));
-      lensEl.setAttribute('y', (by - half).toFixed(1));
-      lensEl.setAttribute('width', (2 * half).toFixed(1));
-      lensEl.setAttribute('height', (2 * half).toFixed(1));
-      warpEl.setAttribute('scale', bulge.toFixed(1));
-    }
-    const blur = inBubble ? 0 : easeInOut(p) * 8;
-    inner.style.filter = [warpEl && bulge > 0.5 ? 'url(#tdWarp)' : '', blur > 0.05 ? `blur(${blur.toFixed(1)}px)` : '']
-      .filter(Boolean).join(' ') || 'none';
+    // the intro fades out in the band's tail (a soft mask, not a hard cut), so
+    // the front's colour washes over the text and button before they go;
+    // whatever is left goes in the last stretch
+    const inner0 = Math.max(0, R - 1.45 * w), inner1 = Math.max(inner0 + 1, R - 0.85 * w);
+    const mask = `radial-gradient(circle at ${cx}px ${cy}px, transparent ${inner0.toFixed(1)}px, #000 ${inner1.toFixed(1)}px)`;
+    intro.style.webkitMaskImage = intro.style.maskImage = mask;
+    intro.style.opacity = (1 - smooth(0.5, 0.95, p)).toFixed(3);
+    // the globe behind settles in as the wave carries you there
+    globeEl.style.transform = `scale(${(1 + 0.06 * (1 - k)).toFixed(4)})`;
+    src.style.boxShadow = '';
 
     if (p < 1) requestAnimationFrame(step);
     else finish();
   }
+
+  function cleanupLayers() {
+    tc.remove(); gc.remove(); pc.remove();
+    globeEl.style.transform = ''; globeEl.style.transformOrigin = '';
+  }
+  // cancelled: the intro is left exactly as it was
+  function teardown() {
+    finished = true;
+    cleanupLayers();
+    src.style.boxShadow = '';
+    intro.style.backdropFilter = savedBackdrop;
+  }
   function finish() {
     if (finished) return;
     finished = true;
+    cleanupLayers();
     intro.remove();
-    cv.remove(); pc.remove();
-    if (svg) svg.remove();
     // the crosshair answers: you're on the dial now
     if (pingRing.animate) {
       pingRing.animate(
@@ -2067,7 +2025,16 @@ function waveOut(intro, src, cx, cy) {
     }
   }
   requestAnimationFrame(step);
-  setTimeout(finish, WAVE_BUBBLE + WAVE_TRAVEL + 1500); // if frames stall (hidden tab), still finish
+
+  return {
+    commit() {
+      committed = true;
+      if (phase === 'fade') phase = 'press';      // let go and pressed again in time
+    },
+    cancel() {
+      if (!committed && !finished) phase = 'fade';
+    }
+  };
 }
 
 /* ---------- boot ---------- */
@@ -2082,15 +2049,30 @@ loadStations().then(list => {
   label.textContent = `Tune in · ${list.length.toLocaleString()} stations`;
   btn.classList.add('ready');
   btn.disabled = false;
-  btn.onclick = e => {
+  // The glow starts on press; the release (the click) sends the wave out.
+  // Slide off the button before letting go and the glow fades back.
+  const intro = $('intro');
+  let wave = null, launched = false, upTimer = 0;
+  const dropPress = () => { if (wave && !launched) { wave.cancel(); wave = null; } };
+  btn.addEventListener('pointerdown', e => {
+    if (launched || wave || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    wave = waveOut(intro, btn);
+  });
+  // listen on the window: with a mouse, letting go off the button lands elsewhere
+  addEventListener('pointerup', e => {
+    if (!wave || launched) return;
+    if (!btn.contains(document.elementFromPoint(e.clientX, e.clientY))) { dropPress(); return; }
+    upTimer = setTimeout(dropPress, 600);  // a click should follow; if it doesn't, let go
+  });
+  addEventListener('pointercancel', dropPress);
+  btn.onclick = () => {
+    if (launched) return;
+    launched = true;
+    clearTimeout(upTimer);
     initAudio();                 // must stay inside the click (Safari audio unlock)
     on = true;
-    // the wave opens from where the button was touched; keyboard: its centre
-    const b = btn.getBoundingClientRect();
-    const fromPointer = e.detail > 0 && e.clientX;
-    waveOut($('intro'), btn,
-      fromPointer ? e.clientX : b.left + b.width / 2,
-      fromPointer ? e.clientY : b.top + b.height / 2);
+    if (!wave) wave = waveOut(intro, btn);   // keyboard: no press, so start here
+    wave.commit();
   };
 });
 </script>
