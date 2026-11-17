@@ -458,6 +458,21 @@
     min-height: 48px; font-size: 14px; padding: 0 28px;
   }
   #power:disabled { cursor: wait; color: var(--muted); }
+  /* the cyan fill that bleeds out of the spinner when loading finishes (see readyUp);
+     it sits behind the icon and words */
+  #power { position: relative; }
+  #power .fill {
+    position: absolute; inset: -1px; z-index: 0; border-radius: inherit;
+    background: var(--cyan); pointer-events: none;
+  }
+  #power .spin, #power .label { position: relative; z-index: 1; }
+  #power .label { white-space: nowrap; }   /* never wraps while the width eases */
+  /* a band of brighter light riding the fill's front edge */
+  #power .fill-edge {
+    position: absolute; inset: -1px; z-index: 0; border-radius: inherit; pointer-events: none;
+    mix-blend-mode: screen;
+  }
+  #power.ready.filling { background: rgba(6, 12, 24, 0.86); }   /* the fill layer paints the cyan until it's done */
   /* 13×13 pixel globe drawn at 2×, kept crisp so it reads as 16-bit sprite art */
   #power .spin { width: 26px; height: 26px; image-rendering: pixelated; image-rendering: crisp-edges; }
   /* loaded: the one primary action on screen, so it gets the filled cyan */
@@ -1840,6 +1855,92 @@ drawSpin();
 if (!RM.matches) spinTimer = setInterval(() => { spinPhase = (spinPhase + 10) % 360; drawSpin(); }, 100);
 function stopSpin() { clearInterval(spinTimer); spinCanvas.remove(); }
 
+/* ---------- ready: the spinner's cyan bleeds into the button ----------
+   When the stations have loaded, the spinning globe swells and dissolves into
+   a circle of cyan that spreads out from where it sat until it fills the
+   button. "Scanning frequencies…" fades as it starts; "Tune in · N stations"
+   comes up as the colour reaches it, and the button eases to its new width
+   instead of jumping. The underglow fades in once the fill is complete. */
+const FILL_MS = 720;
+function readyUp(btn, text) {
+  const label = btn.querySelector('.label');
+  const wrap = btn.parentElement;
+  const enable = () => { btn.disabled = false; };
+  if (RM.matches || !btn.animate) {
+    stopSpin();
+    label.textContent = text;
+    btn.classList.add('ready');
+    wrap.classList.add('ready');
+    enable();
+    return;
+  }
+  const br = btn.getBoundingClientRect(), sr = spinCanvas.getBoundingClientRect();
+  const fx = sr.left + sr.width / 2 - br.left + 1, fy = sr.top + sr.height / 2 - br.top + 1;  // +1: the fill overlaps the border
+  const oldW = btn.offsetWidth;
+  btn.style.width = oldW + 'px';                     // hold the width while the content swaps
+
+  // 1. the spinner swells and melts into the colour; the old words fade
+  spinCanvas.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(1.4)', opacity: 0 }],
+    { duration: 260, easing: 'cubic-bezier(0.32, 0, 0.67, 0)', fill: 'forwards' });
+  const out = label.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-in', fill: 'forwards' });
+
+  // 2. the fill spreads out from the spinner's spot, starting at the icon's
+  // size. Its front is soft (it fades in over the last ~16px), with a band of
+  // near-white light riding just behind it, so the colour arrives as a glow
+  // and settles into the flat cyan. The button gives off a little light too.
+  const fill = document.createElement('span');
+  fill.className = 'fill';
+  const edge = document.createElement('span');
+  edge.className = 'fill-edge';
+  btn.prepend(fill, edge);
+  btn.classList.add('filling');
+  const far = Math.max(oldW, 300) - fx + 46;         // just past the far end of the button
+  const at = `circle at ${fx}px ${fy}px`;
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const t0 = performance.now();
+  (function grow(now) {
+    const t = Math.min(1, (now - t0) / FILL_MS);
+    const r = 11 + (far - 11) * ease(t);
+    const m = `radial-gradient(${at}, #000 ${Math.max(0, r - 16).toFixed(1)}px, transparent ${(r + 2).toFixed(1)}px)`;
+    fill.style.webkitMaskImage = fill.style.maskImage = m;
+    const glow = Math.sin(Math.PI * Math.min(1, t * 1.15));   // rises, then eases off as it lands
+    edge.style.background = `radial-gradient(${at}, rgba(220, 253, 255, 0) ${Math.max(0, r - 26).toFixed(1)}px, ` +
+      `rgba(220, 253, 255, ${(0.8 * glow).toFixed(2)}) ${Math.max(0, r - 5).toFixed(1)}px, ` +
+      `rgba(150, 246, 255, 0) ${(r + 6).toFixed(1)}px)`;
+    btn.style.boxShadow = `0 0 ${(10 + 14 * glow).toFixed(1)}px rgba(94, 242, 255, ${(0.2 + 0.25 * glow).toFixed(2)})`;
+    if (t < 1) requestAnimationFrame(grow);
+  })(t0);
+
+  // 3. once the icon has melted: new words, new width (eased), button usable
+  setTimeout(() => {
+    stopSpin();
+    out.cancel();
+    label.textContent = text;
+    btn.classList.add('ready');
+    btn.style.width = '';
+    const newW = btn.offsetWidth;
+    btn.style.width = newW + 'px';
+    btn.animate([{ width: oldW + 'px' }, { width: newW + 'px' }],
+      { duration: 460, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }).onfinish = () => { btn.style.width = ''; };
+    label.animate([{ opacity: 0, transform: 'translateX(-6px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 380, delay: 60, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'backwards' });
+    enable();
+  }, 230);
+
+  // 4. full: hand the colour over to the button itself and bring up the underglow
+  // (the button's background normally eases over 150 ms; skip that here or it
+  // would dip dark for a moment)
+  setTimeout(() => {
+    btn.style.transition = 'none';
+    btn.classList.remove('filling');
+    fill.remove(); edge.remove();
+    btn.style.boxShadow = '';
+    void btn.offsetWidth;
+    btn.style.transition = '';
+    wrap.classList.add('ready');
+  }, FILL_MS + 20);
+}
+
 /* ---------- tune-in wave ----------
    Modelled on a light-wave shader demo: no glass, no bend, just light.
    1. Press: a small soft glow gathers under the button. Slide off and it fades.
@@ -2091,13 +2192,12 @@ loadStations().then(list => {
   buildMenu();
   setMode('all');
   const btn = $('power');
-  stopSpin();
-  const label = btn.querySelector('.label');
-  if (!list.length) { label.textContent = 'Could not reach the station list'; return; }
-  label.textContent = `Tune in · ${list.length.toLocaleString()} stations`;
-  btn.classList.add('ready');
-  btn.parentElement.classList.add('ready');   // the underglow
-  btn.disabled = false;
+  if (!list.length) {
+    stopSpin();
+    btn.querySelector('.label').textContent = 'Could not reach the station list';
+    return;
+  }
+  readyUp(btn, `Tune in · ${list.length.toLocaleString()} stations`);
   // The glow starts on press; the release (the click) sends the wave out.
   // Slide off the button before letting go and the glow fades back.
   const intro = $('intro');
