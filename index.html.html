@@ -1,0 +1,2080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<!-- dark-only app: both schemes get the same bar colour so the status bar always matches -->
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#02030a">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#02030a">
+<meta name="color-scheme" content="dark">
+<title>TerraDial</title>
+<!-- favicon: the loading globe sprite, frozen on one frame -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2015%2015%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20width%3D%2215%22%20height%3D%2215%22%20rx%3D%223%22%20fill%3D%22%2302030a%22%20shape-rendering%3D%22auto%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%229%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2211%22%20y%3D%223%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%225%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%225%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%226%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%227%22%20width%3D%2213%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%228%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%228%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%229%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%2211%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%2211%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2211%22%20y%3D%2211%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%2212%22%20width%3D%229%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%2213%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA2klEQVR42u1XsRHCMAyUFCqoWCUNU7AB47EBU9CwChXpEqhyF3SyopyxLN+h1vF99H69/QisqNu/oWBN44BfeJ7gEgZ5gktYuAX88nyZAK7Hg/k4yLNziQnUfsDacQ4jBJVLZIB3fjv14ubz/WFa15iozsBOW0x1Zq15P2ciLgO/Uv3aVC21EFsDqeJnujYNqhmF8oHSGpD8oE0fSM311u/bnQLucDmOGYuBWZ2lpqG92zD3jDX1x34R/d+EXrkAAIB4VvOsaRwQa0SzZUilVGr1SsikRWePeP4BSSRijf3YOpAAAAAASUVORK5CYII=">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAACFklEQVR42u3dsQ3CMBRF0ZeEKlSsQsMUbMB4bMAUNKxCRR1miMBgx+dMANGV5eLrexineQlsxOgTIGgQNAgaBI2gQdAgaBA0CBpBQ9t2vf3hy/PV1f+9HvZOaBA0CBoEDYJG0CBoEDQIGgSNoKEdQ217OXqbtYhZESc0CBpBg6BB0CBoEDSCBkGDoEHQkN/NcpSezbidjlV90PP90dXvT2WzH05oXDlA0CBoEDSCBkGDoEHQIGgEDfHGSrY8m9Gbtd+/9OyHExpXDhA0CBoEDYJG0CBoEDQIGgRNzHLEGyikkj0ta/d4OKFx5QBBg6BB0AgaBA2CBkGDoBE0xF6OTSu9d6L1N1mc0CBoEDSCBkGDoEHQIGgEDYIGQcNXDeM0L7GXg0rZy4ErBwgaBA2CBkEjaBA0CBoEDYIm9nL8VW17J0rv5fB9nNAgaAQNggZBg6BB0AgaBA2CBkFDvLGSUrMT3kxxQoOgQdAIGgQNggZBg6ARNAgaBA354SzH2jcvvMnCJ/04oXHlAEGDoEHQIGgEDYIGQYOgQdDELEdaerPDXottv5nihMaVAwQNggZBg6ARNAgaBA2CBkHTmWGc5qWmH2SPR+zZcEKDoBE0CBoEDYJG0D4BggZBg6BB0MQsRy96mxWpbdbCCQ2CRtAgaBA0CBoEjaBB0CBoEDTELAdOaBA0CBoEDYJG0CBoEDQIGgSNoKENb35kQdSC3WqBAAAAAElFTkSuQmCC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #02030a;
+    --text: #e8f6ff;
+    --muted: #7d93a8;
+    --cyan: #5ef2ff;
+    --accent: #5ef2ff;               /* colour of the tuned station's category */
+    --panel: rgba(6, 12, 24, 0.72);
+    --line: rgba(94, 242, 255, 0.25);
+
+    /* shared easing tokens */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    -webkit-tap-highlight-color: transparent;  /* no grey flash on tap */
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;                 /* no pull-to-refresh while spinning the globe */
+  }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    overflow: hidden;
+  }
+  body { height: 100dvh; }
+
+  /* the globe is a control surface: owns every touch axis, no selection, no long-press callout */
+  #globe {
+    position: fixed; inset: 0; touch-action: none;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  }
+
+  /* analogue static + scan lines over everything.
+     No mix-blend-mode: the noise is drawn as white with varying alpha, which
+     looks identical to grey noise in "screen" mode but blends far more cheaply. */
+  #static {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; opacity: 0;
+    image-rendering: pixelated;
+  }
+  #scan {
+    position: fixed; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px);
+  }
+
+  /* the tuning crosshair — only transform/opacity change per frame */
+  #cross {
+    position: fixed; left: 50%; top: 50%;
+    width: 64px; height: 64px; margin: -32px 0 0 -32px;
+    border: 1.5px solid var(--accent); border-radius: 50%;
+    pointer-events: none; opacity: .85;
+    transition: border-color 200ms ease;
+    will-change: transform;
+  }
+  #cross i { position: absolute; background: var(--accent); transition: background-color 200ms ease; }
+  #cross i:nth-of-type(1) { left: 50%; top: -16px; width: 1px; height: 14px; }
+  #cross i:nth-of-type(2) { left: 50%; bottom: -16px; width: 1px; height: 14px; }
+  #cross i:nth-of-type(3) { top: 50%; left: -16px; height: 1px; width: 14px; }
+  #cross i:nth-of-type(4) { top: 50%; right: -16px; height: 1px; width: 14px; }
+  #cross .halo {
+    position: absolute; inset: -2px; border-radius: 50%;
+    box-shadow:
+      0 0 40px 10px color-mix(in srgb, var(--accent) 65%, transparent),
+      inset 0 0 18px color-mix(in srgb, var(--accent) 50%, transparent);
+    opacity: .15; will-change: opacity;
+  }
+  /* sonar ring: sent out from the crosshair with each buffering ping */
+  #cross .ping {
+    position: absolute; inset: -2px; border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    opacity: 0; will-change: transform, opacity;
+  }
+
+  /* station beacon (positioned by the globe; children animate) */
+  .beacon { position: relative; width: 14px; height: 14px; pointer-events: none; }
+  .beacon .b-inner, .beacon .b-dot, .beacon .b-halo { position: absolute; inset: 0; border-radius: 50%; }
+  .beacon .b-dot { background: var(--accent); }
+  .beacon .b-halo {
+    box-shadow: 0 0 40px 14px color-mix(in srgb, var(--accent) 80%, transparent);
+    opacity: .45; will-change: opacity;
+  }
+
+  /* top bar */
+  #top {
+    position: fixed;
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    left: calc(16px + env(safe-area-inset-left, 0px));
+    right: calc(16px + env(safe-area-inset-right, 0px));
+    display: flex; gap: 8px; align-items: center;
+    pointer-events: none;
+  }
+  /* wordmark: plain Geist Mono, no caps or wide tracking */
+  #top h1 {
+    font-size: 17px; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap;
+    color: var(--cyan); margin-right: auto; text-shadow: 0 0 10px rgba(94,242,255,.35);
+    -webkit-user-select: none; user-select: none;
+  }
+
+  .dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px var(--c); }
+  .ic { flex: none; width: 14px; height: 14px; display: block; }
+
+  /* genre trigger */
+  #genreBtn { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 200px; }
+  #genreBtn .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #genreBtn .chev { width: 10px; height: 10px; transition: transform 180ms var(--ease-out); }
+  #genreBtn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+
+  /* genre menu — grows out of its trigger, exits faster than it enters */
+  #genreMenu {
+    position: fixed; z-index: 5; width: 232px;
+    max-height: calc(100dvh - var(--menu-top, 64px) - 16px - env(safe-area-inset-bottom, 0px));
+    overflow-y: auto; overscroll-behavior: contain;
+    padding: 6px;
+    background: rgba(6, 12, 24, 0.9); border: 1px solid var(--line); border-radius: 14px;
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
+    transform-origin: var(--origin, top left);
+    visibility: hidden; opacity: 0; transform: scale(0.95);
+    transition:
+      opacity 120ms var(--ease-out),
+      transform 120ms var(--ease-out),
+      visibility 0s linear 120ms;
+  }
+  #genreMenu.open {
+    visibility: visible; opacity: 1; transform: none;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 180ms var(--ease-out),
+      visibility 0s;
+  }
+  #genreMenu.instant { transition: none; }   /* opened from the keyboard: no animation */
+  #genreMenu hr { border: 0; height: 1px; background: rgba(255,255,255,.08); margin: 4px 6px; }
+
+  #genreMenu .item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 9px 10px; border: 0; border-radius: 8px;
+    background: transparent;
+    text-align: left; letter-spacing: .04em;
+    transition: background-color 120ms ease;
+  }
+  #genreMenu .item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #genreMenu .item small { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  #genreMenu .item .check { width: 12px; height: 12px; color: var(--c); opacity: 0; }
+  #genreMenu .item[aria-checked="true"] .check { opacity: 1; }
+  #genreMenu .item:active:not(:disabled) { transform: none; background: rgba(255,255,255,.1); }
+  #genreMenu .item:focus-visible { outline: none; background: rgba(255,255,255,.08); }
+  #genreMenu .item:disabled { cursor: default; opacity: .6; }
+  #genreMenu .item .heart-ic { flex: none; width: 12px; height: 12px; margin: 0 -2.5px; color: var(--c); } /* takes a dot's 7px so labels line up */
+  /* saved stations, listed under Favourites: tap one to fly there */
+  #genreMenu .item.fav-station { padding: 7px 10px 7px 26px; font-size: 12px; letter-spacing: .02em; }
+  #genreMenu .item.fav-station .dot { width: 6px; height: 6px; }
+  @media (hover: hover) and (pointer: fine) {
+    #genreMenu .item:hover { background: rgba(255,255,255,.06); }
+  }
+
+  /* buttons — a slightly more solid fill instead of a backdrop blur: a blur behind
+     each pill had to be recomputed every frame the globe or static moved */
+  button {
+    --c: var(--cyan);
+    pointer-events: auto; cursor: pointer;
+    font: inherit; font-size: 12px; letter-spacing: .08em;
+    color: var(--text); background: rgba(6, 12, 24, 0.86);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 14px;
+    touch-action: manipulation;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+    transition:
+      transform 160ms var(--ease-out),
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+  button:active:not(:disabled) { transform: scale(0.97); }
+  button.active {
+    background: color-mix(in srgb, var(--c) 20%, rgba(6, 12, 24, 0.86));
+    border-color: var(--c);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    button:not(:disabled):hover { border-color: var(--c); }
+  }
+
+  button:focus-visible { outline: 1.5px solid var(--c); outline-offset: 2px; }
+
+  #mute, #random { display: inline-flex; align-items: center; gap: 6px; }
+  #mute .off, #mute.active .on { display: none; }
+  #mute.active .off { display: block; }
+  #mute.active { --c: #ff5e6c; }
+
+  /* phones: icon-only Mute/Random so title + genre + controls fit one row,
+     sized up to a comfortable ~44px thumb target */
+  @media (max-width: 560px) {
+    #top { gap: 6px; }
+    #top h1 { font-size: 15px; }
+    #top button { min-height: 44px; font-size: 13px; }
+    #mute .label, #random .label {
+      position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+    }
+    #mute, #random { min-width: 44px; padding: 0 12px; justify-content: center; }
+    #mute .ic, #random .ic { width: 18px; height: 18px; }
+    #genreBtn { max-width: 140px; padding: 0 14px; }
+    #genreBtn .dot { width: 8px; height: 8px; }
+    #genreBtn .chev { width: 12px; height: 12px; }
+  }
+
+  /* station readout */
+  #panel {
+    position: fixed; left: 0; right: 0; margin-inline: auto;
+    bottom: calc(44px + env(safe-area-inset-bottom, 0px)); /* room for the footer below */
+    width: min(520px, calc(100% - 32px));
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 18px;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  }
+  /* footer: support link on the left, credit on the right, lined up with the panel.
+     The row itself lets drags through to the globe; only the link catches taps. */
+  #footer {
+    position: fixed; left: 0; right: 0; margin-inline: auto;
+    bottom: calc(4px + env(safe-area-inset-bottom, 0px));
+    width: min(520px, calc(100% - 32px));
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    font-size: 11px; color: var(--muted); pointer-events: none;
+  }
+  #footer .credit {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    padding: 4px 0;               /* room so the link underline isn't clipped */
+    -webkit-user-select: none; user-select: none;
+  }
+  #footer .heart { display: inline-block; width: 11px; height: 11px; color: #ff5e6c; vertical-align: -1px; margin: 0 1px; }
+  #footer a {
+    flex: none; pointer-events: auto;
+    display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 2px;
+    color: var(--cyan); text-decoration: none; letter-spacing: .02em;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+    transition: color 150ms ease, transform 160ms var(--ease-out);
+  }
+  #footer a .ic { width: 14px; height: 14px; }
+  /* support link: warm red heart, text stays cyan */
+  #footer a.support .ic { color: #ff5e6c; }
+  /* phones: "♥ Support" — the brand name drops, the full label stays for screen readers */
+  @media (max-width: 560px) {
+    #footer a.support .sl { display: none; }
+  }
+  /* the name reads as part of the sentence: soft text colour, faint underline */
+  #footer a.author {
+    display: inline; min-height: 0; padding: 6px 0; flex: initial;
+    color: #c6d4e1; letter-spacing: inherit;
+    text-decoration: underline; text-decoration-color: rgba(198, 212, 225, .35);
+    text-underline-offset: 3px;
+    transition: color 150ms ease, text-decoration-color 150ms ease;
+  }
+  #footer a.author:active { transform: none; color: var(--cyan); }
+  #footer a:active { transform: scale(0.97); }
+  #footer a:focus-visible { outline: 1.5px solid var(--cyan); outline-offset: 2px; border-radius: 4px; }
+  @media (hover: hover) and (pointer: fine) {
+    #footer a:hover { color: #8ff6ff; }
+    #footer a.author:hover { color: var(--cyan); text-decoration-color: currentColor; }
+  }
+  /* the smallest phones: tighten so the credit isn't cut off */
+  @media (max-width: 359px) {
+    #footer { font-size: 10px; gap: 8px; }
+    #footer a:not(.author) { letter-spacing: 0; gap: 4px; }
+    #footer a .ic { width: 12px; height: 12px; }
+  }
+
+  /* status sits on the bottom row, left of the signal meter; wraps rather than
+     pushing the meter if a message ever runs long */
+  #status {
+    flex: 1; min-width: 0;
+    font-size: 11px; line-height: 16px; letter-spacing: .25em; text-transform: uppercase; color: var(--muted);
+  }
+  /* Held / Muted after the status. Phones: Held is dropped (the lit lock says it)
+     and Muted becomes an icon; both stay readable to screen readers */
+  #status .mute-ic { display: none; width: 12px; height: 12px; margin-left: 8px; vertical-align: -1px; }
+  @media (max-width: 560px) {
+    #status .s-held, #status .s-muted .s-txt {
+      position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+    }
+    #status .mute-ic { display: inline-block; }
+  }
+  #status .s-main { display: inline-block; }
+
+  /* connecting: three dots fill in one by one, in hard steps like an old LCD */
+  #status .s-dots { display: inline-block; letter-spacing: .1em; margin-left: .1em; }
+  #status .s-dots i { font-style: normal; opacity: .15; animation: 1.4s step-end infinite; }
+  #status .s-dots i:nth-child(1) { animation-name: dot1; }
+  #status .s-dots i:nth-child(2) { animation-name: dot2; }
+  #status .s-dots i:nth-child(3) { animation-name: dot3; }
+  @keyframes dot1 { 0% { opacity: .15 } 25%, 100% { opacity: 1 } }
+  @keyframes dot2 { 0% { opacity: .15 } 50%, 100% { opacity: 1 } }
+  @keyframes dot3 { 0% { opacity: .15 } 75%, 100% { opacity: 1 } }
+
+  /* connected: title case, primary cyan, a touch of glow */
+  #status[data-kind="live"] { text-transform: none; letter-spacing: .06em; font-size: 12px; }
+  #status[data-kind="live"] .s-main {
+    color: var(--cyan); font-weight: 600;
+    text-shadow: 0 0 10px rgba(94, 242, 255, .45);
+  }
+  .name-row { display: flex; align-items: center; gap: 8px; margin: 0 0 2px; }
+  #name { flex: 1; min-width: 0; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #name.empty { color: var(--muted); }    /* nothing tuned: "Searching the airwaves" */
+
+  /* names too long for the row crawl like a ticker: two copies side by side,
+     slid one copy's width, so the loop is seamless. Rests at the start first. */
+  #name.crawl {
+    text-overflow: clip;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+            mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  }
+  #name .run { display: inline-flex; will-change: transform; animation: crawl var(--crawl-s, 12s) linear infinite; }
+  #name .run span { flex: none; padding-right: 56px; }
+  @keyframes crawl {
+    0%, 18% { transform: translateX(0); }
+    100%    { transform: translateX(-50%); }
+  }
+
+  /* back, hold and favourite: 40px tap targets that don't grow the row */
+  .icon-btn {
+    flex: none; display: grid; place-items: center;
+    width: 40px; height: 40px; margin: -10px -6px; padding: 0;
+    border: 0; border-radius: 50%; background: transparent; color: var(--muted);
+    transition: color 150ms ease, transform 160ms var(--ease-out);
+  }
+  .icon-btn[hidden] { display: none; }
+  .icon-btn svg { width: 20px; height: 20px; transition: fill 150ms ease; }
+  .icon-btn:focus-visible { outline: 1.5px solid var(--accent); outline-offset: -4px; }
+  #back { margin-left: -12px; }
+  #fav { margin-right: -12px; }
+  #fav[aria-pressed="true"], #hold[aria-pressed="true"] { color: var(--accent); }
+  #fav[aria-pressed="true"] svg { fill: currentColor; }
+  #hold .locked, #hold[aria-pressed="true"] .unlocked { display: none; }
+  #hold[aria-pressed="true"] .locked { display: block; }
+  @media (hover: hover) and (pointer: fine) {
+    .icon-btn:hover { color: var(--text); }
+    #fav[aria-pressed="true"]:hover, #hold[aria-pressed="true"]:hover { color: var(--accent); }
+  }
+
+  /* held: the crosshair only browses, so it goes quiet and neutral */
+  body.held #cross { border-color: var(--muted); }
+  body.held #cross i { background: var(--muted); }
+  body.held #cross .halo { opacity: 0 !important; }
+
+  /* while held: the station under the crosshair, ready to switch to */
+  #peek {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08);
+    font-size: 12px; color: var(--muted);
+  }
+  #peek[hidden] { display: none; }
+  #peek .pk-label { flex: none; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
+  #peek .pk-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+  #peekTune { flex: none; min-height: 32px; padding: 0 12px; font-size: 11px; }
+  /* phones: label on its own line, the station name big enough to read under it */
+  @media (max-width: 560px) {
+    #peek {
+      display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-areas: "l l b" "d n b"; column-gap: 8px; row-gap: 4px; align-items: center;
+    }
+    #peek[hidden] { display: none; }
+    #peek .pk-label { grid-area: l; }
+    #peek .dot { grid-area: d; }
+    #peek .pk-name { grid-area: n; font-size: 14px; }
+    #peekTune { grid-area: b; min-height: 40px; }
+  }
+  #track {
+    font-size: 13px; color: var(--accent); margin-bottom: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: color 200ms ease;
+  }
+  #track[hidden] { display: none; }
+  /* tabular digits so the live coordinates don't jitter while you drag */
+  #place {
+    font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+  }
+  /* signal strength: how close the crosshair is to the station */
+  #signal { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  #signal #meter { flex: none; width: 116px; }
+  @media (max-width: 560px) { #signal #meter { width: 80px; } }
+  #signal .sig-label {
+    flex: none; font-size: 10px; line-height: 1; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  #meter { flex: 1; display: flex; gap: 4px; height: 6px; }
+  #meter span { position: relative; flex: 1; background: rgba(255,255,255,.08); border-radius: 2px; }
+  #meter span::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    background: var(--accent); box-shadow: 0 0 8px var(--accent);
+    opacity: 0; transition: opacity 150ms ease;
+  }
+  #meter span.on::after { opacity: 1; }
+
+  /* power-on overlay — seen once, so it gets a real exit */
+  #intro {
+    position: fixed; inset: 0; display: grid; place-items: center;
+    /* darker scrim + light blur so the station dots don't fight the text */
+    background: radial-gradient(ellipse 420px 260px at center, rgba(2,3,10,.88), rgba(2,3,10,.5));
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    z-index: 10; text-align: center;
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    transition: opacity 300ms var(--ease-out);
+  }
+  #intro > div { transition: transform 300ms var(--ease-out); }
+  #intro.leaving { opacity: 0; pointer-events: none; }
+  #intro.leaving > div { transform: scale(0.97); }
+  /* logo mark above the wordmark: 13×13 sprite at 6×, pixel-crisp */
+  #intro .logo-globe {
+    display: block; width: 78px; height: 78px; margin: 0 auto 18px;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+    filter: drop-shadow(0 0 12px rgba(94, 242, 255, .35));
+  }
+  #intro h2 { font-size: 36px; font-weight: 600; letter-spacing: -0.03em; color: var(--cyan);
+    text-shadow: 0 0 16px rgba(94,242,255,.4); margin-bottom: 12px;
+    -webkit-user-select: none; user-select: none; }
+  #intro p { color: #c6d4e1; font-size: 14px; line-height: 1.7; max-width: 340px; margin: 0 auto 24px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.6); text-wrap: balance; }
+  #power {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 48px; font-size: 14px; padding: 0 28px;
+  }
+  #power:disabled { cursor: wait; color: var(--muted); }
+  /* 13×13 pixel globe drawn at 2×, kept crisp so it reads as 16-bit sprite art */
+  #power .spin { width: 26px; height: 26px; image-rendering: pixelated; image-rendering: crisp-edges; }
+  /* loaded: the one primary action on screen, so it gets the filled cyan */
+  #power.ready {
+    background: var(--cyan); color: #02030a; border-color: var(--cyan);
+    font-weight: 600; letter-spacing: .06em;
+    box-shadow: 0 0 24px rgba(94, 242, 255, .35);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    #power.ready:hover { background: #8ff6ff; border-color: #8ff6ff; }
+  }
+  #power.ready:focus-visible { outline-color: var(--cyan); outline-offset: 3px; }
+
+  /* tune-in wave (see waveOut). Tint and glow are soft, so they're drawn at half
+     resolution and scaled up; the sparks are scaled up with hard edges. */
+  #waveTint, #wave, #wavePx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none; }
+  #waveTint { mix-blend-mode: color; }     /* recolours what's under it, keeps its brightness */
+  #wave { mix-blend-mode: screen; }        /* the band's own light */
+  #wavePx { image-rendering: pixelated; image-rendering: crisp-edges; }
+  /* the colour the wave leaves on the screen edges as it goes */
+  #waveRim {
+    position: fixed; inset: 0; z-index: 11; pointer-events: none; opacity: 0;
+    background: conic-gradient(from 200deg, #5ef2ff, #b69cff, #ff5edb, #ff5e6c, #ff8a3d, #ffd166, #b8ff5e, #3dffb0, #5ef2ff);
+    -webkit-mask-image: radial-gradient(closest-side, transparent 82%, #000 140%);
+            mask-image: radial-gradient(closest-side, transparent 82%, #000 140%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* keep fades, drop movement */
+    #intro > div, #intro.leaving > div { transition: none; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div id="globe"></div>
+<canvas id="static"></canvas>
+<div id="scan"></div>
+<div id="cross"><b class="halo"></b><b class="ping"></b><i></i><i></i><i></i><i></i></div>
+
+<div id="top">
+    <h1>TerraDial</h1>
+    <button id="genreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="genreMenu">
+      <i class="dot"></i><span class="label">All</span>
+      <svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>
+    </button>
+    <button id="mute" aria-pressed="false" title="Mute (M)">
+      <svg class="ic on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+      <svg class="ic off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+      <span class="label">Mute</span>
+    </button>
+    <button id="random" title="Fly to a random station">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></svg>
+      <span class="label">Random</span>
+    </button>
+</div>
+
+<div id="genreMenu" role="menu" aria-label="Station genre"></div>
+
+<div id="panel">
+  <div class="name-row">
+    <button id="back" class="icon-btn" aria-label="Back to previous station" title="Back to previous station (B)" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+    </button>
+    <div id="name" class="empty">Searching the airwaves</div>
+    <button id="hold" class="icon-btn" aria-pressed="false" aria-label="Hold this station" title="Hold this station (L)" hidden>
+      <svg class="unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg>
+      <svg class="locked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </button>
+    <button id="fav" class="icon-btn" aria-pressed="false" aria-label="Save to favourites" title="Save to favourites (F)" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.3-4.5-9.3-9C1.3 8.1 3.3 4.6 6.8 4.6c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.5 0 5.5 3.5 4.1 6.9-2 4.5-9.3 9-9.3 9z"/></svg>
+    </button>
+  </div>
+  <div id="track" hidden></div>
+  <div id="place">Drag the globe to tune</div>
+  <div id="signal">
+    <div id="status"></div>
+    <span class="sig-label" aria-hidden="true">Signal</span>
+    <div id="meter" role="meter" aria-label="Signal strength" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><span></span><span></span><span></span><span></span><span></span></div>
+  </div>
+  <div id="peek" hidden>
+    <span class="pk-label">Under crosshair</span>
+    <i class="dot"></i><span class="pk-name"></span>
+    <button id="peekTune">Tune in</button>
+  </div>
+</div>
+
+<footer id="footer">
+  <!-- opens in a new tab so the station keeps playing.
+       Phones show "♥ Support"; the aria-label keeps the full name for screen readers -->
+  <a class="support" href="https://buy.stripe.com/eVq00k29E8WLgbd6dx8so00" target="_blank" rel="noopener" aria-label="Support TerraDial">
+    <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.1 1.6-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.7 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>
+    <span>Support<span class="sl"> TerraDial</span></span>
+  </a>
+  <span class="credit">Made with <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-label="love" role="img"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.1 1.6-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.7 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg> by <a class="author" href="https://moralesmike.com" target="_blank" rel="noopener">mikemorales</a></span>
+</footer>
+
+<div id="intro">
+  <div>
+    <canvas class="logo-globe" width="13" height="13" aria-hidden="true"></canvas>
+    <h2>TerraDial</h2>
+    <p>Spin the Earth. Line up a city with the crosshair and tune in to live radio.</p>
+    <button id="power" disabled><canvas class="spin" width="13" height="13" aria-hidden="true"></canvas><span class="label">Scanning frequencies…</span></button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/globe.gl@2"></script>
+<script>
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const flag = cc => cc && cc.length === 2
+  ? String.fromCodePoint(...[...cc.toUpperCase()].map(c => 127397 + c.charCodeAt(0))) : '';
+
+// Stations and the camera are compared as unit vectors: one dot product per
+// station instead of a page of trig, which matters when it runs every frame.
+const RAD = Math.PI / 180, DEG = 180 / Math.PI;
+function vec(lat, lng) {
+  const c = Math.cos(lat * RAD);
+  return [c * Math.cos(lng * RAD), Math.sin(lat * RAD), c * Math.sin(lng * RAD)];
+}
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const angleOf = d => Math.acos(Math.max(-1, Math.min(1, d))) * DEG;
+
+// write a style only when the value actually changes
+function setStyle(el, prop, v) {
+  const cache = el._styles || (el._styles = {});
+  if (cache[prop] === v) return;
+  cache[prop] = v;
+  el.style[prop] = v;
+}
+
+/* ---------- categories ----------
+   A station gets the category of its first tag that matches (tags are roughly
+   ordered by relevance), checked against this list in order. */
+const CATS = [
+  { id: 'electronic', label: 'Electronic', color: '#ff5edb', tags: ['electronic', 'techno', 'house'],
+    re: /techno|electro|house|trance|ambient|minimal|drum ?(and|&|n) ?bass|dnb|edm|dance|club|breakbeat|dubstep|idm|synth|chill ?out|lounge|downtempo/i },
+  { id: 'rock', label: 'Rock', color: '#ff8a3d', tags: ['rock', 'metal', 'indie'],
+    re: /rock|metal|punk|grunge|indie|alternative|hardcore/i },
+  { id: 'jazz', label: 'Jazz & Soul', color: '#ffd166', tags: ['jazz', 'blues', 'soul'],
+    re: /jazz|blues|swing|soul|funk|motown|gospel/i },
+  { id: 'classical', label: 'Classical', color: '#b69cff', tags: ['classical', 'opera'],
+    re: /classical|klassik|opera|baroque|symphon|orchestr|chamber|piano/i },
+  { id: 'hiphop', label: 'Hip-Hop & R&B', color: '#ff5e6c', tags: ['hiphop', 'rnb'],
+    re: /hip ?-?hop|\brap\b|r ?& ?b|\brnb\b|urban|\btrap\b|grime/i },
+  { id: 'world', label: 'World & Folk', color: '#3dffb0', tags: ['latin', 'folk', 'reggae', 'country'],
+    re: /latin|reggae|world|folk|country|traditional|celtic|salsa|cumbia|bossa|samba|afro|bollywood|k-?pop|j-?pop|arab|turk|balkan|flamenco|tango|regional/i },
+  { id: 'pop', label: 'Pop & Hits', color: '#b8ff5e', tags: ['pop', 'hits'],
+    re: /pop|hits|top ?40|charts?|adult contemporary|\b(60|70|80|90)s\b|oldies|decades/i },
+  { id: 'news', label: 'News & Talk', color: '#f4efe0', tags: ['news', 'talk'],
+    re: /news|talk|sport|information|politic|public radio|spoken|comedy|educat/i },
+];
+const OTHER = { id: 'other', label: 'Other', color: '#5ef2ff', tags: [], re: null };
+function classify(tags) {
+  for (const t of tags) for (const c of CATS) if (c.re.test(t)) return c;
+  return OTHER;
+}
+
+/* ---------- station data (Radio Browser API) ---------- */
+const SERVERS = ['de1', 'de2', 'fi1', 'nl1', 'at1'];
+async function api(query) {
+  for (const s of SERVERS) {
+    try {
+      const r = await fetch(`https://${s}.api.radio-browser.info/json/stations/search?${query}`);
+      if (r.ok) return await r.json();
+    } catch (e) { /* try next server */ }
+  }
+  return [];
+}
+
+// Only keep stations whose audio format this browser can actually play
+// (e.g. Safari can't play some Ogg/Opus streams that Chrome can).
+const probe = document.createElement('audio');
+const can = type => probe.canPlayType(type) !== '';
+const CAN = {
+  mp3: can('audio/mpeg'),
+  aac: can('audio/aac') || can('audio/mp4; codecs="mp4a.40.2"'),
+  opus: can('audio/ogg; codecs="opus"'),
+  ogg: can('audio/ogg; codecs="vorbis"'),
+  flac: can('audio/flac')
+};
+function playable(codec) {
+  const c = (codec || '').toUpperCase();
+  if (c.includes('MP3')) return CAN.mp3;
+  if (c.includes('AAC')) return CAN.aac;
+  if (c.includes('OPUS')) return CAN.opus;
+  if (c.includes('OGG') || c.includes('VORBIS')) return CAN.ogg;
+  if (c.includes('FLAC')) return CAN.flac;
+  return true; // unknown codec: let it try
+}
+
+async function loadStations() {
+  const base = 'has_geo_info=true&hidebroken=true&order=clickcount&reverse=true';
+  const genreTags = CATS.flatMap(c => c.tags);
+  const lists = await Promise.all([
+    api(base + '&limit=3000'),
+    ...genreTags.map(t => api(`${base}&tag=${encodeURIComponent(t)}&limit=400`))
+  ]);
+
+  const seen = new Map();
+  for (const s of lists.flat()) {
+    if (seen.has(s.stationuuid)) continue;
+    const url = s.url_resolved || s.url || '';
+    const lat = parseFloat(s.geo_lat), lng = parseFloat(s.geo_long);
+    if (!url.startsWith('https://') || s.hls === 1 || /\.m3u8?(\?|$)|\.pls(\?|$)/i.test(url)) continue;
+    if (!isFinite(lat) || !isFinite(lng) || (lat === 0 && lng === 0)) continue;
+    if (!playable(s.codec)) continue;
+    const name = (s.name || '').trim();
+    if (!name) continue;
+    const tags = (s.tags || '').split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+    seen.set(s.stationuuid, {
+      id: s.stationuuid, name, url, lat, lng,
+      country: s.country || '', state: s.state || '', cc: s.countrycode || '',
+      tags, cat: classify(tags)
+    });
+  }
+
+  // Many stations share a city's exact coordinates; fan them out in a small spiral
+  // so each one can be tuned in separately.
+  const stacks = new Map();
+  const out = [...seen.values()];
+  for (const st of out) {
+    const key = st.lat.toFixed(2) + ',' + st.lng.toFixed(2);
+    const n = stacks.get(key) || 0;
+    stacks.set(key, n + 1);
+    if (n > 0) {
+      const a = n * 2.39996, rad = 0.3 * Math.sqrt(n);
+      st.lat += rad * Math.sin(a);
+      st.lng += rad * Math.cos(a) / Math.max(0.2, Math.cos(st.lat * Math.PI / 180));
+    }
+    st.v = vec(st.lat, st.lng);
+    if (favs.has(st.id)) st.fav = true;
+  }
+  // favourites that fell out of today's list come back from their saved snapshot
+  for (const [id, snap] of favs) {
+    if (seen.has(id)) continue;
+    out.push({ ...snap, id, cat: classify(snap.tags || []), v: vec(snap.lat, snap.lng), fav: true });
+  }
+  return out;
+}
+
+/* ---------- favourites ----------
+   Saved in this browser only (no accounts). Each one keeps a snapshot of the
+   station, so it still works if it drops out of the station list later. */
+const FAV_KEY = 'terradial.favourites.v1';
+const favs = new Map();
+try {
+  for (const f of JSON.parse(localStorage.getItem(FAV_KEY) || '[]')) {
+    if (f && f.id && f.url && isFinite(f.lat) && isFinite(f.lng)) favs.set(f.id, f);
+  }
+} catch (e) { /* storage blocked or corrupt: start empty */ }
+function saveFavs() {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs.values()])); } catch (e) { /* private mode */ }
+}
+function snapshot(st) {
+  const { id, name, url, lat, lng, country, state, cc, tags } = st;
+  return { id, name, url, lat, lng, country, state, cc, tags };
+}
+
+/* ---------- globe ---------- */
+// "low-power" asks dual-GPU laptops to stay on the integrated GPU
+const globe = Globe({
+  rendererConfig: { antialias: true, alpha: true, powerPreference: 'low-power' }
+})($('globe'))
+  .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+  .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+  .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+  .atmosphereColor('#3a9bff')
+  .atmosphereAltitude(0.18)
+  .pointLat('lat').pointLng('lng')
+  .pointColor(d => d.cat.color)
+  .pointAltitude(0.006)
+  .pointRadius(0.16)
+  .pointsMerge(true)
+  .htmlLat('lat').htmlLng('lng').htmlAltitude(0.01)
+  .htmlElement(d => d.el)
+  // nothing on the globe is hoverable or clickable, so skip the per-frame raycasting
+  .enablePointerInteraction(false);
+
+// The library renders at up to 2× device pixels; on a phone that's ~4× the pixels
+// of 1×. 1.5× is visually near-identical on a blurry night texture.
+globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+
+// start over the Czech Republic
+globe.pointOfView({ lat: 49.8, lng: 15.5, altitude: 1.8 });
+const controls = globe.controls();
+controls.minDistance = 120;
+controls.maxDistance = 500;
+controls.rotateSpeed = 0.6;
+
+/* ---------- let the globe sleep when nothing moves ----------
+   The 3D scene used to be redrawn 60–120 times a second forever, even with the
+   globe sitting still. Now it renders while you drag, while it glides to a stop,
+   while a fly-to or a fade is running, and then pauses. The last frame stays on
+   screen; any touch wakes it before the controls see the event. */
+let globeReady = false, globeAwake = true, dragging = false;
+let sleepAt = 0, sleepTimer = 0;
+
+function wakeGlobe(ms = 1200) {
+  sleepAt = Math.max(sleepAt, performance.now() + ms);
+  if (!globeAwake) { globeAwake = true; globe.resumeAnimation(); }
+  if (globeReady && !sleepTimer) sleepTimer = setTimeout(trySleep, ms);
+}
+function trySleep() {
+  sleepTimer = 0;
+  const left = sleepAt - performance.now();
+  if (left > 0) { sleepTimer = setTimeout(trySleep, left + 20); return; }
+  if (dragging) { sleepTimer = setTimeout(trySleep, 500); return; }
+  globeAwake = false;
+  globe.pauseAnimation();
+}
+
+// snapArmed: the user has moved the globe themselves, so the next time it comes
+// to rest the dial may click onto the nearest station (see the main loop)
+let snapArmed = false;
+controls.addEventListener('start', () => { dragging = true; snapArmed = true; wakeGlobe(); });
+controls.addEventListener('end', () => { dragging = false; wakeGlobe(); });
+controls.addEventListener('change', () => wakeGlobe()); // includes the damping glide
+const globeEl = $('globe');
+
+// How far the finger or mouse actually travelled in this gesture (CSS px), so a
+// brush of the screen or a tap can be told apart from a deliberate drag. Under
+// NUDGE_PX, the dial stays on the station it was on (see the detent).
+const NUDGE_PX = 12;
+let gestureTravel = Infinity, downX = 0, downY = 0, pointers = 0;
+globeEl.addEventListener('pointerdown', e => {
+  wakeGlobe();
+  if (pointers++ === 0) { downX = e.clientX; downY = e.clientY; gestureTravel = 0; }
+  else gestureTravel = Infinity;               // a second finger: a pinch, always deliberate
+}, { capture: true });
+addEventListener('pointermove', e => {
+  if (pointers) gestureTravel = Math.max(gestureTravel, Math.hypot(e.clientX - downX, e.clientY - downY));
+});
+const lift = () => { pointers = Math.max(0, pointers - 1); };
+addEventListener('pointerup', lift);
+addEventListener('pointercancel', lift);
+globeEl.addEventListener('wheel', () => { wakeGlobe(); gestureTravel = Infinity; }, { capture: true, passive: true });
+
+// don't pause before the textures have drawn, or the globe could stay black
+globe.onGlobeReady(() => { globeReady = true; wakeGlobe(1500); });
+setTimeout(() => { if (!globeReady) { globeReady = true; wakeGlobe(); } }, 10000);
+
+addEventListener('resize', () => { globe.width(innerWidth).height(innerHeight); wakeGlobe(); });
+
+/* ---------- borders + "where am I" ----------
+   Faint coastlines and country borders so Europe reads as Europe, not a blob of
+   dots, plus a lookup for the country under the crosshair. Natural Earth 1:110m
+   via world-atlas (~100 KB), loaded alongside the stations. If it fails, the
+   globe works as before and the readout shows coordinates only. */
+const BORDERS_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+const TOPOJSON_URL = 'https://cdn.jsdelivr.net/npm/topojson-client@3/+esm';
+// Natural Earth's short map labels, spelled out for the readout
+const COUNTRY_NAMES = {
+  'United States of America': 'United States', 'Dem. Rep. Congo': 'DR Congo',
+  'Central African Rep.': 'Central African Republic', 'Bosnia and Herz.': 'Bosnia & Herzegovina',
+  'Dominican Rep.': 'Dominican Republic', 'Eq. Guinea': 'Equatorial Guinea', 'S. Sudan': 'South Sudan',
+  'Solomon Is.': 'Solomon Islands', 'Falkland Is.': 'Falkland Islands', 'N. Cyprus': 'Northern Cyprus',
+  'W. Sahara': 'Western Sahara', 'Fr. S. Antarctic Lands': 'French Southern Lands', 'eSwatini': 'Eswatini'
+};
+let countries = [], bordersReady = false;
+
+async function loadBorders() {
+  try {
+    const [{ feature, mesh }, topo] = await Promise.all([
+      import(TOPOJSON_URL),
+      fetch(BORDERS_URL).then(r => r.json())
+    ]);
+
+    // lookup table: each country's rings, plus a bounding box so most are skipped at once
+    for (const f of feature(topo, topo.objects.countries).features) {
+      const g = f.geometry;
+      if (!g) continue;
+      const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
+      if (!polys.length) continue;
+      let x0 = 180, y0 = 90, x1 = -180, y1 = -90;
+      for (const poly of polys) for (const [x, y] of poly[0]) {
+        if (x < x0) x0 = x; if (x > x1) x1 = x;
+        if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+      const name = (f.properties && f.properties.name) || '';
+      countries.push({ name: COUNTRY_NAMES[name] || name, polys, box: [x0, y0, x1, y1] });
+    }
+
+    // every border and coastline exactly once (shared edges aren't drawn twice),
+    // broken where the data is cut along the 180° meridian or runs along a pole,
+    // so no seam lines appear there
+    const lines = [];
+    for (const line of mesh(topo, topo.objects.countries).coordinates) {
+      let run = [];
+      for (const p of line) {
+        const q = run[run.length - 1];
+        const seam = q && (
+          (Math.abs(p[0]) > 179.9 && Math.abs(q[0]) > 179.9) ||
+          (Math.abs(p[1]) > 89.9 && Math.abs(q[1]) > 89.9) ||
+          Math.abs(p[0] - q[0]) > 180);
+        if (seam) { if (run.length > 1) lines.push(run); run = []; }
+        run.push(p);
+      }
+      if (run.length > 1) lines.push(run);
+    }
+
+    globe
+      .pathsData(lines)
+      .pathPoints(d => d)
+      .pathPointLat(p => p[1])
+      .pathPointLng(p => p[0])
+      .pathPointAlt(0.002)                         // just under the station dots
+      .pathColor(() => 'rgba(150, 215, 255, 0.22)')
+      .pathTransitionDuration(0);
+
+    bordersReady = true;
+    scanKey = '';                                  // refresh the readout with country names
+    wakeGlobe();
+  } catch (e) { /* no borders: coordinates only */ }
+}
+loadBorders();
+
+// even-odd ray cast in plain lng/lat; fine at this scale away from the poles
+function inRing(x, y, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+function countryAt(lat, lng) {
+  for (const c of countries) {
+    const b = c.box;
+    if (lng < b[0] || lng > b[2] || lat < b[1] || lat > b[3]) continue;
+    for (const poly of c.polys) {
+      if (!inRing(lng, lat, poly[0])) continue;
+      let hole = false;
+      for (let i = 1; i < poly.length && !hole; i++) hole = inRing(lng, lat, poly[i]);
+      if (!hole) return c.name;
+    }
+  }
+  return null;
+}
+// `near` is a nearby station's region: the 1:110m coastline is coarse, so a
+// coastal city like New York can land "in the sea"
+function whereAt(lat, lng, near) {
+  lng = ((lng + 540) % 360) - 180;
+  const coords = `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
+  if (!bordersReady) return coords;
+  const c = countryAt(lat, lng);
+  return `${c ? 'Over ' + c : near ? 'Near ' + near : 'Over open water'} · ${coords}`;
+}
+
+const beacon = document.createElement('div');
+beacon.className = 'beacon';
+beacon.innerHTML = '<div class="b-inner"><span class="b-halo"></span><span class="b-dot"></span></div>';
+const beaconInner = beacon.querySelector('.b-inner');
+const beaconHalo = beacon.querySelector('.b-halo');
+
+/* ---------- audio ----------
+   Safari (and iOS) only let audio start from a tap or click. So instead of
+   creating a new player per station, we keep two players and "unlock" both
+   during the Switch-on click, then just swap their stream URL.
+     corsEl  → routed through Web Audio, so the glow follows the music
+     plainEl → for stations without CORS headers; plays directly, fake pulse */
+const corsEl = new Audio();
+corsEl.crossOrigin = 'anonymous';
+const plainEl = new Audio();
+for (const el of [corsEl, plainEl]) {
+  el.preload = 'none';
+  el.setAttribute('playsinline', '');
+}
+
+// a tenth of a second of silence, used to unlock the players
+function silentWavUrl() {
+  const n = 800, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
+  const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 8000, true); v.setUint32(28, 8000, true);
+  v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+  w(36, 'data'); v.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);
+  let bin = '';
+  new Uint8Array(buf).forEach(b => bin += String.fromCharCode(b));
+  return 'data:audio/wav;base64,' + btoa(bin);
+}
+
+let ctx, master, noiseGain, musicGain, pingIn, pingGain, analyser, freq, wave;
+let muted = false;
+
+function initAudio() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  ctx = new AC();
+
+  // everything Web Audio plays goes through one master gain, so mute is one switch
+  master = ctx.createGain();
+  master.gain.value = muted ? 0 : 1;
+  master.connect(ctx.destination);
+
+  // looping white noise, band-passed to sound like AM/shortwave hiss
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+  const ch = buf.getChannelData(0);
+  for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf; noise.loop = true;
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass'; bp.frequency.value = 2200; bp.Q.value = 0.4;
+  noiseGain = ctx.createGain(); noiseGain.gain.value = 0;
+  noise.connect(bp);
+  bp.connect(noiseGain);
+  noiseGain.connect(master);
+  noise.start(0);
+
+  // buffering sonar: pings → soft, darkening echo → pingGain → master.
+  // Takes over from the static while a selected station is still connecting.
+  pingGain = ctx.createGain(); pingGain.gain.value = 0;
+  pingGain.connect(master);
+  pingIn = ctx.createGain();
+  const echo = ctx.createDelay(1); echo.delayTime.value = 0.32;
+  const echoTone = ctx.createBiquadFilter();
+  echoTone.type = 'lowpass'; echoTone.frequency.value = 1800;
+  const echoFb = ctx.createGain(); echoFb.gain.value = 0.4;
+  pingIn.connect(pingGain);
+  pingIn.connect(echo);
+  echo.connect(echoTone);
+  echoTone.connect(echoFb);
+  echoFb.connect(echo);
+  echoTone.connect(pingGain);
+
+  // music: player → gain → master, and player → analyser (pre-gain, for the glow)
+  musicGain = ctx.createGain(); musicGain.gain.value = 0;
+  analyser = ctx.createAnalyser(); analyser.fftSize = 256;
+  freq = new Uint8Array(analyser.frequencyBinCount);
+  wave = new Uint8Array(analyser.fftSize);
+  const src = ctx.createMediaElementSource(corsEl);
+  src.connect(musicGain);
+  src.connect(analyser);
+  musicGain.connect(master);
+
+  // unlock both players while we're still inside the click
+  const blip = silentWavUrl();
+  for (const el of [corsEl, plainEl]) { el.src = blip; el.play().catch(() => {}); }
+  ctx.resume();
+}
+
+let activeEl = null, current = null, live = false, fake = false, silentSince = 0;
+let stalledSince = 0;            // a playing stream ran dry and is re-buffering
+
+function clearEl(el) { el.pause(); el.removeAttribute('src'); el.load(); }
+function stopAudio() { activeEl = null; live = false; stalledSince = 0; clearEl(corsEl); clearEl(plainEl); }
+
+// iOS ignores .volume on media elements, but does respect .muted
+function setElVol(el, v) {
+  el.muted = v < 0.03;
+  try { el.volume = Math.min(1, Math.max(0, v)); } catch (e) {}
+}
+
+function start(el, url) {
+  activeEl = el; live = false; silentSince = 0; stalledSince = 0;
+  el.src = url;
+  el.play().catch(err => {
+    if (activeEl === el && err && err.name === 'NotAllowedError') setStatus('Tap anywhere to play');
+  });
+}
+
+for (const el of [corsEl, plainEl]) {
+  el.addEventListener('playing', () => {
+    if (activeEl !== el) return;
+    live = true;
+    stalledSince = 0;
+    setStatus('On Air', 'live');
+    if (current && metaFor !== current) startMeta(current);
+  });
+  el.addEventListener('waiting', () => {
+    if (activeEl !== el) return;
+    if (live && !stalledSince) stalledSince = performance.now();
+    setStatus('Buffering', 'busy');
+  });
+}
+corsEl.addEventListener('error', () => { if (activeEl === corsEl && current) playWithoutCors(current); });
+plainEl.addEventListener('error', () => {
+  if (activeEl !== plainEl || !current) return;
+  current.dead = true;
+  scanKey = '';                  // re-pick the nearest station without this one
+  setHeld(false);                // nothing left to hold on to
+  stopAudio();
+  setStatus('No signal');
+});
+
+function tune(st) {
+  if (current && current !== st && !goingBack) remember(current);
+  stopAudio();
+  current = st; fake = false;
+  setAccent(st.cat.color);
+  stopMeta();
+  setTrack(null);
+  showStation(st);
+  renderFavBtn();
+  renderBack();
+  holdBtn.hidden = false;
+  setStatus('Tuning', 'busy');
+  globe.htmlElementsData([{ lat: st.lat, lng: st.lng, el: beacon }]);
+  wakeGlobe(1300);               // let the globe place the beacon
+  popBeacon();
+  setElVol(plainEl, 0);
+  corsEl.muted = false;
+  start(corsEl, st.url); // try with CORS first so the glow can follow the music
+}
+
+// Stations without CORS headers (or where Safari's Web Audio hears silence)
+// still play directly, just with a fake pulse for the glow.
+function playWithoutCors(st) {
+  activeEl = null;
+  clearEl(corsEl);
+  fake = true;
+  setElVol(plainEl, 0);
+  start(plainEl, st.url);
+}
+
+// Safari suspends audio when a tab is hidden or a call comes in; wake it back up.
+function wake() {
+  if (!ctx) return;
+  if (ctx.state !== 'running') ctx.resume();
+  if (activeEl && activeEl.paused && current) activeEl.play().catch(() => {});
+}
+document.addEventListener('pointerdown', wake);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  wake();
+  if (metaFor) pollMeta(metaFor); // catch up on the song after coming back to the tab
+});
+
+function dropStation() {
+  if (current) remember(current);
+  setHeld(false);
+  stopAudio();
+  current = null;
+  renderBack();
+  holdBtn.hidden = true;
+  globe.htmlElementsData([]);
+  wakeGlobe();
+  stopMeta();
+  setTrack(null);
+  setAccent(OTHER.color);
+  setStatus('');
+  setName('Searching the airwaves');
+  $('name').classList.add('empty');
+  $('place').textContent = whereText || 'Drag the globe to tune';
+  renderFavBtn();
+}
+
+// Glide the globe onto a station without retuning to anything it passes on the way.
+let quietUntil = 0;
+function settleOn(st, ms) {
+  const dur = RM.matches ? 0 : ms;
+  snapArmed = false;
+  quietUntil = performance.now() + dur + 400;
+  wakeGlobe(dur + 600);
+  globe.pointOfView({ lat: st.lat, lng: st.lng, altitude: globe.pointOfView().altitude }, dur);
+}
+
+/* ---------- hold ----------
+   Pins the station you're hearing: it plays on at full strength while the
+   crosshair roams. The station under the crosshair shows in the panel with a
+   "Tune in" button. Letting go glides back home, so nothing changes by surprise. */
+let held = false;
+const holdBtn = $('hold');
+const peekEl = $('peek'), peekName = peekEl.querySelector('.pk-name'), peekTune = $('peekTune');
+let peekSt = null;
+
+function setHeld(v, goHome) {
+  if (v && !current) return;
+  if (held === v) return;
+  held = v;
+  document.body.classList.toggle('held', v);
+  holdBtn.setAttribute('aria-pressed', String(v));
+  const label = v ? 'Release this station' : 'Hold this station';
+  holdBtn.setAttribute('aria-label', label);
+  holdBtn.title = label + ' (L)';
+  if (!v) {
+    renderPeek(null);
+    if (goHome && current && !current.dead) settleOn(current, 900);
+  }
+  renderStatus();
+}
+holdBtn.onclick = () => setHeld(!held, true);
+
+function renderPeek(st) {
+  if (st === peekSt) return;
+  peekSt = st;
+  peekEl.hidden = !st;
+  if (!st) return;
+  peekEl.style.setProperty('--c', st.cat.color);
+  peekTune.style.setProperty('--c', st.cat.color);
+  peekName.textContent = `${flag(st.cc)} ${st.name}`.trim();
+  morph(peekName);
+}
+peekTune.onclick = () => {
+  const st = peekSt;
+  if (!st) return;
+  setHeld(false);
+  pending = null;
+  tune(st);
+  settleOn(st, SNAP_MS);
+};
+
+/* ---------- back ----------
+   Every station you leave goes on a stack; Back steps through it. */
+const backBtn = $('back');
+const backStack = [];
+let goingBack = false;
+
+function remember(st) {
+  if (backStack[backStack.length - 1] !== st) {
+    backStack.push(st);
+    if (backStack.length > 30) backStack.shift();
+  }
+}
+function renderBack() {
+  backBtn.hidden = !backStack.some(s => !s.dead && s !== current);
+}
+function goBack() {
+  let st = null;
+  while (backStack.length && !st) {
+    const s = backStack.pop();
+    if (!s.dead && s !== current) st = s;
+  }
+  renderBack();
+  if (!st) return;
+  setHeld(false);
+  if (!active.includes(st)) setMode('all');
+  goingBack = true;
+  pending = null;
+  tune(st);
+  goingBack = false;
+  settleOn(st, 1200);
+}
+backBtn.onclick = goBack;
+
+/* ---------- mute ---------- */
+function setMuted(v) {
+  muted = v;
+  const b = $('mute');
+  b.classList.toggle('active', v);
+  b.setAttribute('aria-pressed', String(v));
+  b.querySelector('.label').textContent = v ? 'Unmute' : 'Mute';
+  if (master) master.gain.setTargetAtTime(v ? 0 : 1, ctx.currentTime, 0.015);
+  if (fake && v) setElVol(plainEl, 0); // direct-play stations bypass Web Audio
+  renderStatus();
+}
+$('mute').onclick = () => setMuted(!muted);
+addEventListener('keydown', e => {
+  if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'm' || e.key === 'M') setMuted(!muted);
+  if (genreMenu.contains(document.activeElement)) return;
+  if ((e.key === 'f' || e.key === 'F') && current) toggleFav(current);
+  if ((e.key === 'l' || e.key === 'L') && current) setHeld(!held, true);
+  if (e.key === 'b' || e.key === 'B') goBack();
+});
+
+/* ---------- now playing (via the Cloudflare Worker) ----------
+   Paste your deployed Worker URL here. Left empty, the app works as before,
+   just without song titles. */
+const META_URL = 'https://terra-dial-meta.mentiondesign.workers.dev';
+const META_EVERY = 20000;      // ms between checks while a station is on air
+let metaTimer = null, metaFor = null;
+
+function startMeta(st) {
+  stopMeta();
+  if (!META_URL) return;
+  metaFor = st;
+  pollMeta(st);
+  metaTimer = setInterval(() => pollMeta(st), META_EVERY);
+}
+function stopMeta() { clearInterval(metaTimer); metaTimer = null; metaFor = null; }
+
+async function pollMeta(st) {
+  if (document.hidden) return;   // no lookups for a background tab
+  try {
+    const r = await fetch(`${META_URL}?url=${encodeURIComponent(st.url)}`);
+    if (!r.ok) return;
+    const j = await r.json();
+    if (current !== st) return;  // tuned away while we waited
+    setTrack(cleanTrack(j, st));
+  } catch (e) { /* keep whatever we showed last */ }
+}
+
+// Many stations send their own name, a URL or placeholder text instead of a song.
+function cleanTrack(j, st) {
+  const t = (j && j.title || '').trim();
+  if (t.length < 3) return null;
+  const low = t.toLowerCase();
+  if (low === st.name.toLowerCase() || st.name.toLowerCase().includes(low)) return null;
+  if (/https?:|www\.|\.(com|net|org|fm)\b/i.test(t)) return null;
+  if (/^(unknown|n\/a|-+|untitled|advert|commercial)/i.test(t)) return null;
+  return j.artist ? `${j.song} — ${j.artist}` : t;
+}
+
+function setTrack(text) {
+  const el = $('track');
+  const next = text || '';
+  if (el.dataset.t === next) return;
+  el.dataset.t = next;
+  el.textContent = next ? `♪ ${next}` : '';
+  el.hidden = !next;
+  if (next) morph(el);
+}
+
+/* ---------- UI ---------- */
+let statusText = '';             // nothing tuned: the name line says "Searching the airwaves"
+const MUTE_IC = '<svg class="mute-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
+let statusKind = '';             // '' | 'busy' (connecting) | 'live' (on air)
+function setStatus(t, kind = '') {
+  const becameLive = kind === 'live' && statusKind !== 'live';
+  statusText = t; statusKind = kind;
+  renderStatus();
+  if (becameLive) morph($('status').querySelector('.s-main')); // small confirm beat
+}
+function renderStatus() {
+  const el = $('status');
+  el.dataset.kind = statusKind;
+  el.textContent = '';
+  if (statusText) {
+    const main = document.createElement('span');
+    main.className = 's-main';
+    main.textContent = statusText;
+    el.append(main);
+    if (statusKind === 'busy') {
+      el.insertAdjacentHTML('beforeend', '<span class="s-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>');
+    }
+  }
+  if (held) el.insertAdjacentHTML('beforeend', '<span class="s-held"> · Held</span>');
+  if (muted) {
+    const sep = statusText || held ? ' · ' : '';
+    el.insertAdjacentHTML('beforeend', `<span class="s-muted"><span class="s-txt">${sep}Muted</span>${MUTE_IC}</span>`);
+  }
+}
+
+// set only when the tuned station changes, never per frame
+function setAccent(color) { document.documentElement.style.setProperty('--accent', color); }
+
+// tiny blur crossfade so the station name doesn't hard-swap
+function morph(el) {
+  if (!el.animate) return;
+  el.animate(
+    RM.matches
+      ? [{ opacity: 0.4 }, { opacity: 1 }]
+      : [{ opacity: 0.4, filter: 'blur(2px)' }, { opacity: 1, filter: 'blur(0px)' }],
+    { duration: 180, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+  );
+}
+
+function popBeacon() {
+  if (!beaconInner.animate) return;
+  beaconInner.animate(
+    RM.matches
+      ? [{ opacity: 0 }, { opacity: 1 }]
+      : [{ opacity: 0, transform: 'scale(0.9)' }, { opacity: 1, transform: 'scale(1)' }],
+    { duration: 200, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+  );
+}
+
+/* ---------- station name: crawls when it doesn't fit ---------- */
+const nameEl = $('name');
+nameEl.dataset.n = nameEl.textContent;   // the starting "Searching the airwaves"
+const CRAWL_PX_S = 35;           // crawl speed, px per second
+const CRAWL_GAP = 56;            // space between the end of the name and its repeat (matches the CSS)
+
+function setName(text) {
+  nameEl.dataset.n = text;
+  nameEl.title = text;
+  fitName();
+}
+// plain text first; if it overflows (and motion is allowed), swap in the ticker
+function fitName() {
+  const text = nameEl.dataset.n || '';
+  nameEl.classList.remove('crawl');
+  nameEl.textContent = text;
+  if (RM.matches || nameEl.classList.contains('empty')) return;   // reduced motion: ellipsis
+  if (nameEl.scrollWidth <= nameEl.clientWidth + 1) return;
+  const run = document.createElement('span');
+  run.className = 'run';
+  const a = document.createElement('span'), b = document.createElement('span');
+  a.textContent = b.textContent = text;
+  b.setAttribute('aria-hidden', 'true');
+  run.append(a, b);
+  nameEl.textContent = '';
+  nameEl.append(run);
+  nameEl.classList.add('crawl');
+  // the moving part (82% of the cycle) covers one copy's width at CRAWL_PX_S
+  const moveS = a.offsetWidth / CRAWL_PX_S;
+  nameEl.style.setProperty('--crawl-s', (moveS / 0.82).toFixed(1) + 's');
+}
+// re-check when the row changes width (window resize, Back/Hold buttons
+// appearing) or the web font arrives
+let nameW = 0;
+if (window.ResizeObserver) {
+  new ResizeObserver(() => {
+    if (nameEl.clientWidth !== nameW) { nameW = nameEl.clientWidth; fitName(); }
+  }).observe(nameEl);
+} else addEventListener('resize', () => fitName());
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitName());
+RM.addEventListener && RM.addEventListener('change', () => fitName());
+
+function showStation(st) {
+  nameEl.classList.remove('empty');
+  setName(st.name);
+  const where = [st.state, st.country].filter(Boolean).join(', ');
+  const tags = st.tags.slice(0, 3).join(' · ');
+  $('place').textContent = `${flag(st.cc)} ${where}  —  ${st.cat.label}${tags ? ' · ' + tags : ''}`;
+  morph($('name'));
+}
+const meterEl = $('meter');
+const bars = [...meterEl.querySelectorAll('span')];
+
+let stations = [], active = [], mode = 'all';
+
+// genre menu order: All, then the big four, then the rest
+const MENU_ORDER = ['pop', 'electronic', 'rock', 'hiphop', 'jazz', 'classical', 'world', 'news', 'other'];
+const ALL_ITEM = { id: 'all', label: 'All stations', color: '#5ef2ff' };
+const FAV_ITEM = { id: 'fav', label: 'Favourites', color: '#ff5e6c' };
+const HEART_SVG = '<svg class="heart-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.3-4.5-9.3-9C1.3 8.1 3.3 4.6 6.8 4.6c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.5 0 5.5 3.5 4.1 6.9-2 4.5-9.3 9-9.3 9z"/></svg>';
+const CHECK_SVG = '<svg class="check" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.5 6.3 2.3 2.2 4.7-5"/></svg>';
+const genreBtn = $('genreBtn'), genreMenu = $('genreMenu');
+let menuItems = [];
+
+function buildMenu() {
+  const counts = new Map();
+  for (const s of stations) counts.set(s.cat.id, (counts.get(s.cat.id) || 0) + 1);
+  const cats = MENU_ORDER
+    .map(id => id === 'other' ? OTHER : CATS.find(c => c.id === id))
+    .filter(c => c && counts.get(c.id));
+
+  genreMenu.textContent = '';
+  const add = (it, n) => {
+    const b = document.createElement('button');
+    b.className = 'item';
+    b.setAttribute('role', 'menuitemradio');
+    b.setAttribute('aria-checked', 'false');
+    b.tabIndex = -1;
+    b.dataset.mode = it.id;
+    b.style.setProperty('--c', it.color);
+    const dot = document.createElement('i'); dot.className = 'dot';
+    const name = document.createElement('span'); name.className = 'name'; name.textContent = it.label;
+    const count = document.createElement('small'); count.textContent = n.toLocaleString();
+    b.append(dot, name, count);
+    b.insertAdjacentHTML('beforeend', CHECK_SVG);
+    b.onclick = () => { setMode(it.id); closeMenu(true); };
+    genreMenu.appendChild(b);
+  };
+  add(ALL_ITEM, stations.length);
+
+  // Favourites: a filter like the genres, then each saved station to fly to
+  const saved = stations.filter(s => s.fav).sort((a, b) => a.name.localeCompare(b.name));
+  add(FAV_ITEM, saved.length);
+  const favItem = genreMenu.lastElementChild;
+  favItem.querySelector('.dot').outerHTML = HEART_SVG;
+  if (!saved.length) {
+    favItem.disabled = true;
+    favItem.querySelector('small').textContent = 'tap ♥ to save';
+  }
+  for (const st of saved) {
+    const b = document.createElement('button');
+    b.className = 'item fav-station';
+    b.setAttribute('role', 'menuitem');
+    b.tabIndex = -1;
+    b.style.setProperty('--c', st.cat.color);
+    const dot = document.createElement('i'); dot.className = 'dot';
+    const name = document.createElement('span'); name.className = 'name'; name.textContent = st.name;
+    const where = document.createElement('small'); where.textContent = flag(st.cc) || st.country;
+    b.append(dot, name, where);
+    b.onclick = () => { flyTo(st); closeMenu(true); };
+    genreMenu.appendChild(b);
+  }
+
+  genreMenu.appendChild(document.createElement('hr'));
+  for (const c of cats) add(c, counts.get(c.id));
+  menuItems = [...genreMenu.querySelectorAll('.item:not(:disabled)')];
+  for (const b of menuItems) if (b.dataset.mode) b.setAttribute('aria-checked', String(b.dataset.mode === mode));
+}
+
+// fly the globe so the station sits under the crosshair; tuning then happens as usual
+function flyTo(st) {
+  setHeld(false);                // picking a station means you want to hear it
+  if (!active.includes(st)) setMode(st.fav ? 'fav' : 'all');
+  const ms = RM.matches ? 0 : 1600;
+  snapArmed = false;             // the flight lands dead-centre; don't snap at its slow start
+  wakeGlobe(ms + 600);
+  globe.pointOfView({ lat: st.lat, lng: st.lng, altitude: 1.0 }, ms);
+}
+
+const favBtn = $('fav');
+function renderFavBtn(pop) {
+  favBtn.hidden = !current;
+  if (!current) return;
+  const on = !!current.fav;
+  favBtn.setAttribute('aria-pressed', String(on));
+  const label = on ? 'Remove from favourites' : 'Save to favourites';
+  favBtn.setAttribute('aria-label', label);
+  favBtn.title = label + ' (F)';
+  if (pop && on && favBtn.animate) {
+    favBtn.animate(
+      RM.matches
+        ? [{ opacity: 0.4 }, { opacity: 1 }]
+        : [{ transform: 'scale(0.8)' }, { transform: 'scale(1.18)', offset: 0.45 }, { transform: 'scale(1)' }],
+      { duration: 320, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+    );
+  }
+}
+
+function toggleFav(st) {
+  st.fav = !st.fav;
+  if (st.fav) favs.set(st.id, snapshot(st)); else favs.delete(st.id);
+  saveFavs();
+  renderFavBtn(true);
+  buildMenu();
+  if (mode === 'fav') setMode('fav');   // refresh the dots on the globe
+}
+favBtn.onclick = () => { if (current) toggleFav(current); };
+
+function placeMenu() {
+  const r = genreBtn.getBoundingClientRect();
+  const w = genreMenu.offsetWidth;
+  const gutter = 16;
+  const left = Math.min(Math.max(gutter, r.left), innerWidth - w - gutter);
+  const top = r.bottom + 6;
+  genreMenu.style.left = left + 'px';
+  genreMenu.style.top = top + 'px';
+  genreMenu.style.setProperty('--menu-top', top + 'px');
+  // grow out of the trigger, not out of the menu's own corner
+  genreMenu.style.setProperty('--origin', `${r.left + r.width / 2 - left}px -6px`);
+}
+
+function openMenu(fromKeyboard) {
+  placeMenu();
+  genreMenu.classList.toggle('instant', !!fromKeyboard || RM.matches);
+  genreMenu.classList.add('open');
+  genreBtn.setAttribute('aria-expanded', 'true');
+  const sel = menuItems.find(b => b.dataset.mode === mode) || menuItems[0];
+  if (sel) sel.focus({ preventScroll: true });
+}
+
+function closeMenu(returnFocus) {
+  if (!genreMenu.classList.contains('open')) return;
+  genreMenu.classList.remove('open');
+  genreBtn.setAttribute('aria-expanded', 'false');
+  if (returnFocus) genreBtn.focus({ preventScroll: true });
+}
+
+// e.detail === 0 means the click came from Enter/Space, not a pointer
+genreBtn.addEventListener('click', e => {
+  genreMenu.classList.contains('open') ? closeMenu(false) : openMenu(e.detail === 0);
+});
+genreBtn.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); openMenu(true); }
+});
+genreMenu.addEventListener('keydown', e => {
+  const i = menuItems.indexOf(document.activeElement);
+  const go = n => menuItems[(n + menuItems.length) % menuItems.length].focus();
+  if (e.key === 'ArrowDown') { e.preventDefault(); go(i + 1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); go(i - 1); }
+  else if (e.key === 'Home') { e.preventDefault(); go(0); }
+  else if (e.key === 'End') { e.preventDefault(); go(-1); }
+  else if (e.key === 'Escape') { e.preventDefault(); closeMenu(true); }
+  else if (e.key === 'Tab') closeMenu(false);
+});
+// tap or drag anywhere else (including the globe) closes it
+document.addEventListener('pointerdown', e => {
+  if (!genreMenu.contains(e.target) && !genreBtn.contains(e.target)) closeMenu(false);
+});
+addEventListener('resize', () => closeMenu(false));
+
+function setMode(m) {
+  mode = m;
+  active = m === 'all' ? stations
+    // in Favourites, the station you're on stays tunable even after un-hearting it
+    : m === 'fav' ? stations.filter(s => s.fav || s === current)
+    : stations.filter(s => s.cat.id === m);
+  globe.pointsData(active);
+  wakeGlobe(1500);               // points fade between genres
+  scanKey = '';
+  const it = m === 'all' ? ALL_ITEM : m === 'fav' ? FAV_ITEM : (m === 'other' ? OTHER : CATS.find(c => c.id === m));
+  genreBtn.style.setProperty('--c', it.color);
+  genreBtn.querySelector('.label').textContent = m === 'all' ? 'All' : it.label;
+  genreBtn.classList.toggle('active', m !== 'all');
+  for (const b of menuItems) if (b.dataset.mode) b.setAttribute('aria-checked', String(b.dataset.mode === m));
+  if (current && !active.includes(current)) dropStation();
+}
+
+$('random').onclick = () => {
+  const pool = active.filter(s => !s.dead);
+  if (!pool.length) return;
+  const s = pool[Math.floor(Math.random() * pool.length)];
+  setHeld(false);
+  const ms = RM.matches ? 0 : 1600;
+  snapArmed = false;
+  wakeGlobe(ms + 600);
+  globe.pointOfView({ lat: s.lat, lng: s.lng, altitude: 1.0 }, ms);
+};
+
+/* ---------- static canvas ----------
+   White pixels with random alpha (see the #static CSS). The colour channels are
+   set once; each redraw only rewrites alpha. */
+const sc = $('static'), sx = sc.getContext('2d');
+sc.width = 200; sc.height = 120;
+const img = sx.createImageData(sc.width, sc.height);
+img.data.fill(255);
+function drawStatic() {
+  const d = img.data;
+  for (let i = 3; i < d.length; i += 4) d[i] = Math.random() * 255 | 0;
+  sx.putImageData(img, 0, 0);
+}
+
+/* ---------- main loop: the crosshair is the tuning needle ---------- */
+let on = false, pending = null, pendingSince = 0;
+let lastFrame = 0, lastStatic = 0, lastLit = -1;
+let glow = 0;                    // smoothed beat level that drives the crosshair pulse
+let scanKey = '', nearest = null, nearestDist = Infinity, camV = null;
+let speed = 0, lastAlt = null, zoomedAt = 0; // for spotting when the globe has come to rest
+let whereText = '';              // "Over Czechia · 49.8°N 15.5°E"
+const placeEl = $('place');
+const cross = $('cross');
+const crossHalo = cross.querySelector('.halo');
+const pingRing = cross.querySelector('.ping');
+
+// The detent: how fast the camera may still be drifting (in capture-widths per
+// second) and still count as "at rest", and how long the snap glide takes.
+const REST_SPEED = 0.3;
+const SNAP_MS = 320;
+
+/* ---------- buffering sonar ----------
+   While a selected station connects (or re-buffers), the static steps aside for
+   a soft two-note ping every 1.6 s, and the crosshair sends out a matching ring
+   and brightens its halo. Drag off the station and the static comes back. */
+const PING_EVERY = 1600;         // ms
+const STALL_GRACE = 500;         // ms a playing stream may hiccup before the sonar starts
+let nextPingAt = 0, pingAt = -Infinity;
+
+function sonarPing() {
+  const t0 = ctx.currentTime + 0.02;
+  // a C6 bell over a quiet C5, both fading out like a struck glass
+  for (const [f, vol, dur] of [[1046.5, 0.22, 1.3], [523.25, 0.08, 1.1]]) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(vol, t0 + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(pingIn);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  // the ring: expands out of the crosshair (reduced motion: just a soft flash)
+  if (pingRing.animate && !held) {
+    pingRing.animate(
+      RM.matches
+        ? [{ opacity: 0.5 }, { opacity: 0 }]
+        : [{ opacity: 0.7, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.2)' }],
+      { duration: 1300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+    );
+  }
+}
+
+function frame(t) {
+  requestAnimationFrame(frame);
+  if (!on) return;
+  // 120 Hz screens don't need the tuning logic twice as often; ~60 fps is plenty
+  if (t - lastFrame < 14) return;
+  const dt = Math.min(100, t - lastFrame); // ms since the last processed frame
+  lastFrame = t;
+
+  const pov = globe.pointOfView();
+  const capture = 1.2 + pov.altitude * 2.2; // degrees; wider when zoomed out
+
+  // only search for the nearest station when the camera has actually moved
+  const key = pov.lat.toFixed(4) + ',' + pov.lng.toFixed(4) + ',' + pov.altitude.toFixed(3);
+  if (key !== scanKey) {
+    scanKey = key;
+    const v = vec(pov.lat, pov.lng);
+    speed = camV ? angleOf(dot(camV, v)) / dt * 1000 : 0;   // degrees per second
+    if (lastAlt !== null && Math.abs(pov.altitude - lastAlt) > 1e-4) zoomedAt = t;
+    lastAlt = pov.altitude;
+    camV = v;
+    let bestDot = -2;
+    nearest = null;
+    for (const s of active) {
+      if (s.dead) continue;
+      const d = dot(s.v, camV);
+      if (d > bestDot) { bestDot = d; nearest = s; }
+    }
+    nearestDist = nearest ? angleOf(bestDot) : Infinity;
+
+    // location readout, shown whenever nothing is tuned
+    const near = nearest && nearestDist < 2 ? (nearest.state || nearest.country) : '';
+    whereText = whereAt(pov.lat, pov.lng, near);
+    if (!current && placeEl.textContent !== whereText) placeEl.textContent = whereText;
+  } else speed = 0;
+
+  // The detent. Once the user lets go and the globe has (nearly) stopped
+  // drifting, click onto the nearest station in range: tune it straight away and
+  // glide it under the crosshair, so the signal reads full and the static clears.
+  // At rest the nearest station always wins over the sticky one, so you can pick
+  // a neighbour in a dense city by stopping on it.
+  // A brush of the screen or a tap isn't a choice: if the finger barely moved,
+  // stay on the current station and settle back onto it, even if a neighbour
+  // in a dense city is now a hair nearer. While held, the detent still centres
+  // stations under the crosshair, it just doesn't tune them.
+  if (snapArmed && !dragging && speed < capture * REST_SPEED && t - zoomedAt > 250) {
+    snapArmed = false;
+    let pick = nearest && nearestDist < capture ? nearest : null;
+    if (gestureTravel < NUDGE_PX && current && !current.dead &&
+        angleOf(dot(current.v, camV)) < capture) pick = current;
+    if (pick) {
+      if (pick !== current && !held) { pending = null; tune(pick); }
+      if (angleOf(dot(pick.v, camV)) > 0.03) {
+        const ms = RM.matches ? 0 : SNAP_MS;  // reduced motion: jump, don't glide
+        wakeGlobe(ms + 400);
+        globe.pointOfView({ lat: pick.lat, lng: pick.lng, altitude: pov.altitude }, ms);
+      }
+    }
+  }
+
+  // stick with the current station until you've clearly moved off it
+  let target = nearest && nearestDist < capture ? nearest : null;
+  let dist = nearestDist;
+  if (current && !current.dead) {
+    const cd = angleOf(dot(current.v, camV));
+    if (cd < capture * 0.7) { target = current; dist = cd; }
+  }
+  let strength = target ? 1 - dist / capture : 0;
+  strength = strength * strength * (3 - 2 * strength); // smoothstep
+
+  // short debounce so fast spinning doesn't load every stream it passes.
+  // Held, or gliding home after Back / Tune in / letting go: no retuning.
+  if (held || t < quietUntil || target === current) pending = null;
+  else if (target !== pending) { pending = target; pendingSince = t; }
+  else if (t - pendingSince > 350) {
+    pending = null;
+    target ? tune(target) : dropStation();
+  }
+  // browsing while held: plain nearest station, no stickiness toward the held one
+  const browse = nearest && nearestDist < capture ? nearest : null;
+  renderPeek(held && browse !== current ? browse : null);
+
+  // how well the station you're hearing comes in: full while held
+  const sig = held ? 1 : target === current ? strength : 0;
+
+  // buffering: on a station whose stream hasn't started, or has stalled for a
+  // moment. Scaled by signal strength, so dragging away fades back to static.
+  const loading = !!current && !current.dead && sig > 0 &&
+    (!live || (stalledSince > 0 && t - stalledSince > STALL_GRACE));
+  const buf = loading ? sig : 0;
+
+  // mix static, sonar and music (master gain handles mute for the Web Audio path)
+  const mg = live ? Math.pow(sig, 0.8) : 0;
+  const now = ctx.currentTime;
+  if (fake) setElVol(plainEl, muted ? 0 : mg);
+  else musicGain.gain.setTargetAtTime(mg, now, 0.08);
+  noiseGain.gain.setTargetAtTime((0.015 + 0.16 * (1 - mg)) * (1 - buf), now, 0.08);
+  pingGain.gain.setTargetAtTime(buf, now, 0.08);
+  if (buf > 0.3) {
+    if (t >= nextPingAt) { nextPingAt = t + PING_EVERY; pingAt = t; sonarPing(); }
+  } else nextPingAt = 0;         // the next buffering spell pings straight away
+
+  // visual static: ~20 redraws a second (it reads as the same flicker), slower
+  // with reduced motion, and none at all once a station is clearly tuned in.
+  // While buffering it thins right down so the sonar ring reads cleanly.
+  const staticOpacity = (0.04 + 0.3 * (1 - mg)) * (1 - 0.75 * buf);
+  if (staticOpacity > 0.06 && t - lastStatic > (RM.matches ? 150 : 50)) {
+    lastStatic = t;
+    drawStatic();
+  }
+  setStyle(sc, 'opacity', staticOpacity.toFixed(2));
+
+  // beat level for the glow
+  let level = 0;
+  if (live) {
+    if (!fake) {
+      analyser.getByteFrequencyData(freq);
+      let sum = 0;
+      for (let i = 1; i < 8; i++) sum += freq[i];
+      level = Math.max(0, (sum / 7 / 255 - 0.35) / 0.65);
+
+      // Safari sometimes hands Web Audio pure silence for live streams. If the
+      // player says it's playing but nothing comes through for 2.5 s, switch
+      // that station to direct playback.
+      analyser.getByteTimeDomainData(wave);
+      let quiet = true;
+      for (let i = 0; i < wave.length; i += 4) {
+        if (Math.abs(wave[i] - 128) > 1) { quiet = false; break; }
+      }
+      if (!quiet) silentSince = 0;
+      else if (!silentSince) silentSince = t;
+      else if (t - silentSince > 2500 && current) playWithoutCors(current);
+    } else {
+      level = 0.35 + 0.35 * Math.sin(t / 1000 * Math.PI * 2 * 0.5); // slow breath, one every 2 s
+    }
+  }
+
+  // Smooth the raw level so the pulse swells and settles instead of flickering
+  // with every drum hit: rises over ~0.25 s, eases back down over ~0.9 s.
+  // Frame-rate independent, so 60 Hz and 120 Hz screens feel the same.
+  const tau = level > glow ? 250 : 900;
+  glow += (level - glow) * (1 - Math.exp(-dt / tau));
+
+  // sonar flash: each ping lights the halo, fading over ~0.6 s
+  // (held: the crosshair isn't what you're hearing, so only the beacon pulses)
+  const flash = held ? 0 : buf * Math.exp(-(t - pingAt) / 600);
+
+  // glow: opacity + transform only, so it stays on the compositor
+  const g = glow * mg, cg = held ? 0 : g;
+  setStyle(crossHalo, 'opacity', Math.min(1, 0.15 + cg * 0.85 + flash * 0.6).toFixed(2));
+  setStyle(cross, 'transform', RM.matches ? '' : `scale(${(1 + cg * 0.18 + flash * 0.06).toFixed(3)})`);
+  setStyle(beaconHalo, 'opacity', (0.45 + g * 0.55).toFixed(2));
+
+  // signal meter: the held station always reads full
+  const lit = held ? bars.length : target ? Math.round(strength * bars.length) : 0;
+  if (lit !== lastLit) {
+    lastLit = lit;
+    bars.forEach((b, i) => b.classList.toggle('on', i < lit));
+    meterEl.setAttribute('aria-valuenow', lit);
+  }
+}
+requestAnimationFrame(frame);
+
+/* ---------- loading globe: a 13×13 pixel sprite ----------
+   Each frame works out, per pixel, where it sits on a sphere and lights it if
+   it lands on a meridian or parallel. It steps at 10 fps on purpose: the
+   choppy turn is what makes it read as 16-bit. */
+function drawGlobeSprite(c, phase) {
+  const N = 13, R = N / 2;
+  c.clearRect(0, 0, N, N);
+  for (let py = 0; py < N; py++) for (let px = 0; px < N; px++) {
+    const x = (px + 0.5 - R) / R, y = (py + 0.5 - R) / R, r2 = x * x + y * y;
+    if (r2 > 1) continue;
+    let lit = r2 > 0.8;                                   // outline
+    if (!lit) {
+      const z = Math.sqrt(1 - r2);
+      const lat = Math.asin(-y) * DEG;
+      const lon = Math.atan2(x, z) * DEG + phase;
+      const m = ((lon % 60) + 60) % 60;
+      lit = Math.min(m, 60 - m) < 9                       // meridians every 60°
+        || Math.abs(lat) < 6 || Math.abs(Math.abs(lat) - 45) < 6; // equator + 45°N/S
+    }
+    c.fillStyle = lit ? '#5ef2ff' : 'rgba(94, 242, 255, 0.16)';
+    c.fillRect(px, py, 1, 1);
+  }
+}
+// the intro logo: the same sprite, frozen front-on like the favicon and logo files
+drawGlobeSprite($('intro').querySelector('.logo-globe').getContext('2d'), 0);
+
+const spinCanvas = $('power').querySelector('.spin');
+const spinCtx = spinCanvas.getContext('2d');
+let spinPhase = 0, spinTimer = 0;
+const drawSpin = () => drawGlobeSprite(spinCtx, spinPhase);
+drawSpin();
+if (!RM.matches) spinTimer = setInterval(() => { spinPhase = (spinPhase + 10) % 360; drawSpin(); }, 100);
+function stopSpin() { clearInterval(spinTimer); spinCanvas.remove(); }
+
+/* ---------- tune-in wave ----------
+   Modelled on a light-wave shader demo: no glass, no bend, just light.
+   1. Press: a small soft glow gathers under the button. Slide off and it fades.
+   2. Release (the click): a wide, soft band of light launches from the button's
+      centre. Its colours run through its thickness: warm yellow and orange on
+      the leading edge, pink and magenta behind, violet, then a cyan tail that
+      fades to nothing. It covers most of the screen almost at once, then
+      glides to the edges and settles there as a fading rim of colour.
+      Whatever the front passes over (logo, title, tagline, button, globe) is
+      briefly recoloured in the wave's colours, and the intro fades out behind
+      the band. Dithered pixel sparks ride the front: long streaks at launch,
+      slowing with it. Reduced motion: the plain fade. */
+const WAVE_TIME = 1150;          // ms from release until the band has settled at the edges
+const WAVE_FAST = 3.2;           // launch sharpness: about 70% of the way in the first 350 ms
+const WAVE_LINGER = 550;         // ms the edge colour hangs on afterwards
+const SEED_R = 30;               // px: the glow under the button while it's pressed
+const SPARK_PX = 2;              // px per spark pixel: fine grain
+// 4×4 ordered (Bayer) dither: a spark fades by losing pixels, not by going see-through
+const BAYER4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16);
+const SPARK_COLORS = ['#ffd166', '#ff8a3d', '#ff5edb', '#ff5e6c', '#b69cff', '#5ef2ff', '#ffffff'];
+// the band, front to back: [position from the front (0) to the tail (1), colour, alpha]
+const BAND = [
+  [-0.15, '255, 209, 102', 0],      // just ahead of the front: nothing yet
+  [0, '255, 209, 102', 0.9],        // yellow leading edge
+  [0.1, '255, 138, 61', 1],         // orange
+  [0.28, '255, 94, 219', 0.9],      // magenta
+  [0.5, '182, 156, 255', 0.7],      // violet
+  [0.75, '94, 242, 255', 0.32],     // cyan tail
+  [1, '94, 242, 255', 0]            // gone
+];
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const smooth = (a, b, v) => { const x = clamp01((v - a) / (b - a)); return x * x * (3 - 2 * x); };
+
+function fadeIntro(intro) {
+  intro.classList.add('leaving');
+  const done = () => intro.remove();
+  intro.addEventListener('transitionend', e => { if (e.target === intro) done(); });
+  setTimeout(done, 400);         // fallback if the transition is skipped
+}
+
+// Starts the press glow. Returns { commit, cancel }: commit() launches the
+// wave; cancel() fades the glow away and leaves the intro as it was.
+function waveOut(intro, src) {
+  const b = src.getBoundingClientRect();
+  const cx = b.left + b.width / 2, cy = b.top + b.height / 2;   // always the button's centre
+  if (RM.matches || !intro.animate) {
+    return { commit() { intro.style.pointerEvents = 'none'; fadeIntro(intro); }, cancel() {} };
+  }
+  const W = innerWidth, H = innerHeight;
+  const corner = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy));
+  const globeEl = $('globe');
+
+  // Three layers over everything:
+  //   tint  — blend mode "color": takes on the band's hue but keeps the
+  //           brightness of what's underneath, so the bright logo, text and
+  //           button turn wave-coloured while the dark background stays dark
+  //   glow  — blend mode "screen": the band's own light
+  //   px    — the dithered sparks, hard-edged
+  // tint and glow are soft, so they're drawn at half resolution.
+  const S = 0.5;
+  const layer = (id, scale) => {
+    const c = document.createElement('canvas');
+    c.id = id;
+    c.width = Math.ceil(W * scale); c.height = Math.ceil(H * scale);
+    const x = c.getContext('2d');
+    x.setTransform(scale, 0, 0, scale, 0, 0);
+    return [c, x];
+  };
+  const [tc, tg] = layer('waveTint', S);
+  const [gc, gg] = layer('wave', S);
+  const [pc, pg] = layer('wavePx', 1 / SPARK_PX);
+  pg.setTransform(1, 0, 0, 1, 0, 0);               // sparks work in pixel cells directly
+  document.body.append(tc, gc, pc);
+
+  const sparks = Array.from({ length: 150 }, () => ({
+    a: Math.random() * Math.PI * 2,
+    off: (Math.random() - 0.75) * 0.45,             // where on the band, × its width (mostly just behind the front)
+    weight: 0.5 + Math.random() * 0.5,
+    c: SPARK_COLORS[Math.random() * SPARK_COLORS.length | 0],
+    life: 0.45 + Math.random() * 0.5,
+    blink: Math.random() * 1000
+  }));
+
+  // the band as a radial gradient: front at R, tail at R - w
+  function drawBand(g, R, w, alpha) {
+    const r0 = Math.max(0, R - w), r1 = R + 0.15 * w;
+    if (r1 <= 0 || alpha <= 0) return;
+    const grad = g.createRadialGradient(cx, cy, r0, cx, cy, r1);
+    const span = r1 - r0;
+    for (const [pos, rgb, a] of BAND) {
+      const r = R - pos * w;
+      grad.addColorStop(clamp01((r - r0) / span), `rgba(${rgb}, ${(a * alpha).toFixed(3)})`);
+    }
+    g.fillStyle = grad;
+    const x0 = Math.max(0, cx - r1), y0 = Math.max(0, cy - r1);
+    g.fillRect(x0, y0, Math.min(W, cx + r1) - x0, Math.min(H, cy + r1) - y0);
+  }
+  // the press glow: a small soft bloom of magenta into violet
+  function drawSeed(g, r, alpha) {
+    if (r <= 0.5 || alpha <= 0) return;
+    const grad = g.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0, `rgba(255, 94, 219, ${(0.85 * alpha).toFixed(3)})`);
+    grad.addColorStop(0.45, `rgba(182, 156, 255, ${(0.5 * alpha).toFixed(3)})`);
+    grad.addColorStop(1, 'rgba(94, 242, 255, 0)');
+    g.fillStyle = grad;
+    g.fillRect(cx - r, cy - r, 2 * r, 2 * r);
+  }
+  const clear = g => { g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, g.canvas.width, g.canvas.height); g.restore(); };
+  const cell = v => Math.round(v / SPARK_PX);
+
+  // the wave's radius over time: shoots out, then glides in to the screen edge
+  const norm = 1 - Math.exp(-WAVE_FAST * WAVE_TIME / 1000);
+  const reach = s => (1 - Math.exp(-WAVE_FAST * s)) / norm;          // 0 → 1 over WAVE_TIME
+  const speed = s => WAVE_FAST * Math.exp(-WAVE_FAST * s) / norm;    // its rate, per second
+
+  let phase = 'press', committed = false, finished = false;
+  let seed = 0, last = performance.now(), launchAt = 0;
+  const savedBackdrop = intro.style.backdropFilter;
+
+  function launch(now) {
+    phase = 'travel';
+    launchAt = now;
+    intro.style.pointerEvents = 'none';
+    // the intro's light blur behind it would fight the mask; the band covers the change
+    intro.style.webkitBackdropFilter = intro.style.backdropFilter = 'none';
+    globeEl.style.transformOrigin = `${cx}px ${cy}px`;
+    wakeGlobe(WAVE_TIME + 600);
+    // edge colour: comes up as the band reaches the edges, then lets go
+    const rim = document.createElement('div');
+    rim.id = 'waveRim';
+    document.body.appendChild(rim);
+    const rimAnim = rim.animate([{ opacity: 0 }, { opacity: 0.45, offset: 0.35 }, { opacity: 0 }], {
+      duration: WAVE_TIME * 0.6 + WAVE_LINGER, delay: WAVE_TIME * 0.4, easing: 'ease-out', fill: 'both'
+    });
+    rimAnim.onfinish = () => rim.remove();
+    setTimeout(finish, WAVE_TIME + 1500);   // if frames stall (hidden tab), still finish
+  }
+
+  function step(now) {
+    if (finished) return;
+    const dt = Math.min(50, now - last);
+    last = now;
+    clear(tg); clear(gg); clear(pg);
+
+    if (phase !== 'travel') {
+      // press glow: blooms in over ~160 ms, breathes while held, fades on cancel
+      seed = phase === 'press' ? Math.min(1, seed + dt / 160) : Math.max(0, seed - dt / 180);
+      if (phase === 'press' && committed) launch(now);
+      else if (phase === 'fade' && seed <= 0) { teardown(); return; }
+      const e = smooth(0, 1, seed);
+      const breathe = 1 + 0.06 * Math.sin(now / 220) * e;
+      drawSeed(gg, SEED_R * e * breathe, e);
+      drawSeed(tg, SEED_R * 1.6 * e, e);
+      src.style.boxShadow = `0 0 ${(24 + 20 * e).toFixed(1)}px ${(6 * e).toFixed(1)}px rgba(255, 94, 219, ${(0.2 + 0.35 * e).toFixed(2)})`;
+      requestAnimationFrame(step);
+      return;
+    }
+
+    const s = (now - launchAt) / 1000;               // seconds since release
+    const p = clamp01(s * 1000 / WAVE_TIME);
+    const k = Math.min(1, reach(s));
+    const R = (corner + 40) * k;
+    const w = Math.min(320, 70 + 0.45 * R);          // the band widens as it travels
+    const fade = 1 - smooth(0.55, 1, p);             // hands over to the edge colour at the end
+    const seedLeft = 1 - smooth(0, 0.25, p);         // the press glow blends into the launch
+
+    drawSeed(gg, SEED_R * (1 + 2 * p), seedLeft);
+    drawBand(gg, R, w, 0.6 * fade);
+    drawBand(tg, R, w * 1.35, fade);                // the recolouring trails a little longer than the light
+
+    // sparks: streaks as long as the wave is fast, thinning out pixel by pixel
+    const dot = (gx, gy, v) => {
+      if (v > BAYER4[(gy & 3) * 4 + (gx & 3)]) pg.fillRect(gx, gy, 1, 1);
+    };
+    const v = speed(s) * (corner + 40);              // px per second at the front
+    const len = Math.min(14, 2 + v / 220);
+    for (const sp of sparks) {
+      const life = p / sp.life;
+      if (life >= 1) continue;
+      const r = R + sp.off * w;
+      if (r <= 0 || (((now + sp.blink) / 90 | 0) % 9) === 0) continue;
+      const a = (1 - life) * Math.min(1, life * 8) * sp.weight;
+      const cos = Math.cos(sp.a), sin = Math.sin(sp.a);
+      const gx = cell(cx + cos * r), gy = cell(cy + sin * r);
+      pg.fillStyle = sp.c;
+      dot(gx, gy, a * 1.6);
+      dot(gx + 1, gy, a * 0.7); dot(gx, gy + 1, a * 0.7); dot(gx + 1, gy + 1, a * 0.45);
+      for (let i = 1; i <= len; i++) {
+        const rr = r - i * SPARK_PX;
+        dot(cell(cx + cos * rr), cell(cy + sin * rr), a * (1 - i / (len + 1)) * 0.8);
+      }
+    }
+
+    // the intro fades out in the band's tail (a soft mask, not a hard cut), so
+    // the front's colour washes over the text and button before they go;
+    // whatever is left goes in the last stretch
+    const inner0 = Math.max(0, R - 1.45 * w), inner1 = Math.max(inner0 + 1, R - 0.85 * w);
+    const mask = `radial-gradient(circle at ${cx}px ${cy}px, transparent ${inner0.toFixed(1)}px, #000 ${inner1.toFixed(1)}px)`;
+    intro.style.webkitMaskImage = intro.style.maskImage = mask;
+    intro.style.opacity = (1 - smooth(0.5, 0.95, p)).toFixed(3);
+    // the globe behind settles in as the wave carries you there
+    globeEl.style.transform = `scale(${(1 + 0.06 * (1 - k)).toFixed(4)})`;
+    src.style.boxShadow = '';
+
+    if (p < 1) requestAnimationFrame(step);
+    else finish();
+  }
+
+  function cleanupLayers() {
+    tc.remove(); gc.remove(); pc.remove();
+    globeEl.style.transform = ''; globeEl.style.transformOrigin = '';
+  }
+  // cancelled: the intro is left exactly as it was
+  function teardown() {
+    finished = true;
+    cleanupLayers();
+    src.style.boxShadow = '';
+    intro.style.backdropFilter = savedBackdrop;
+  }
+  function finish() {
+    if (finished) return;
+    finished = true;
+    cleanupLayers();
+    intro.remove();
+    // the crosshair answers: you're on the dial now
+    if (pingRing.animate) {
+      pingRing.animate(
+        [{ opacity: 0.8, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.4)' }],
+        { duration: 900, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+      );
+    }
+  }
+  requestAnimationFrame(step);
+
+  return {
+    commit() {
+      committed = true;
+      if (phase === 'fade') phase = 'press';      // let go and pressed again in time
+    },
+    cancel() {
+      if (!committed && !finished) phase = 'fade';
+    }
+  };
+}
+
+/* ---------- boot ---------- */
+loadStations().then(list => {
+  stations = list;
+  buildMenu();
+  setMode('all');
+  const btn = $('power');
+  stopSpin();
+  const label = btn.querySelector('.label');
+  if (!list.length) { label.textContent = 'Could not reach the station list'; return; }
+  label.textContent = `Tune in · ${list.length.toLocaleString()} stations`;
+  btn.classList.add('ready');
+  btn.disabled = false;
+  // The glow starts on press; the release (the click) sends the wave out.
+  // Slide off the button before letting go and the glow fades back.
+  const intro = $('intro');
+  let wave = null, launched = false, upTimer = 0;
+  const dropPress = () => { if (wave && !launched) { wave.cancel(); wave = null; } };
+  btn.addEventListener('pointerdown', e => {
+    if (launched || wave || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    wave = waveOut(intro, btn);
+  });
+  // listen on the window: with a mouse, letting go off the button lands elsewhere
+  addEventListener('pointerup', e => {
+    if (!wave || launched) return;
+    if (!btn.contains(document.elementFromPoint(e.clientX, e.clientY))) { dropPress(); return; }
+    upTimer = setTimeout(dropPress, 600);  // a click should follow; if it doesn't, let go
+  });
+  addEventListener('pointercancel', dropPress);
+  btn.onclick = () => {
+    if (launched) return;
+    launched = true;
+    clearTimeout(upTimer);
+    initAudio();                 // must stay inside the click (Safari audio unlock)
+    on = true;
+    if (!wave) wave = waveOut(intro, btn);   // keyboard: no press, so start here
+    wave.commit();
+  };
+});
+</script>
+</body>
+</html>
