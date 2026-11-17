@@ -451,6 +451,21 @@
   }
   #power.ready:focus-visible { outline-color: var(--cyan); outline-offset: 3px; }
 
+  /* tune-in wave (see waveOut): drawn at half resolution and scaled up, which softens it */
+  #wave { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none; }
+  /* the sparks: a quarter-resolution canvas blown up with hard edges, so each one is a fat pixel */
+  #wavePx {
+    position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+  }
+  /* the colour the wave leaves on the screen edges as it goes */
+  #waveRim {
+    position: fixed; inset: 0; z-index: 11; pointer-events: none; opacity: 0;
+    background: conic-gradient(from 200deg, #5ef2ff, #b69cff, #ff5edb, #ff5e6c, #ff8a3d, #ffd166, #b8ff5e, #3dffb0, #5ef2ff);
+    -webkit-mask-image: radial-gradient(closest-side, transparent 82%, #000 140%);
+            mask-image: radial-gradient(closest-side, transparent 82%, #000 140%);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     /* keep fades, drop movement */
     #intro > div, #intro.leaving > div { transition: none; transform: none; }
@@ -1778,6 +1793,283 @@ drawSpin();
 if (!RM.matches) spinTimer = setInterval(() => { spinPhase = (spinPhase + 10) % 360; drawSpin(); }, 100);
 function stopSpin() { clearInterval(spinTimer); spinCanvas.remove(); }
 
+/* ---------- tune-in wave ----------
+   A web take on Libraries.dev's Distortion Waves (its "center" type), in two beats.
+   1. Warp bubble (slow): a clear glass bubble swells out of the touch point.
+      Seen through it, the button and text are magnified and bent like a lens;
+      just outside it they bulge away, and pixel sparks get drawn in toward its rim.
+   2. Wave (fast): the bubble bursts into a ring in the genre colours that
+      accelerates off the screen, carrying the intro away. The sparks ride out
+      on its front, the colour lingers on the screen edges, and the crosshair
+      answers with one ping. Reduced motion: the plain fade. */
+const WAVE_COLORS = ['#5ef2ff', '#b69cff', '#ff5edb', '#ff5e6c', '#ff8a3d', '#ffd166', '#b8ff5e', '#3dffb0', '#5ef2ff'];
+const WAVE_BUBBLE = 650;         // ms: the bubble swells (the slow part)
+const WAVE_TRAVEL = 950;         // ms: the ring ramps up and clears the screen
+const WAVE_LINGER = 650;         // ms the edge colour hangs on afterwards
+const BUBBLE_R = 78;             // px: the bubble's size before it bursts
+const LENS_REACH = 1.6;          // the bulge reaches out to 1.6× the bubble's radius
+const LENS_POWER = 0.6;          // how hard the glass bends what's behind it
+const SPARK_PX = 2;              // px per spark pixel: fine grain
+// 4×4 ordered (Bayer) dither: a spark fades by losing pixels, not by going see-through
+const BAYER4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16);
+// Safari can't reliably run an SVG displacement filter on HTML, so there the
+// bubble is plain clear glass without the lens bend; everything else is the same
+const WARP_OK = !('GestureEvent' in window);
+const clamp01 = v => Math.min(1, Math.max(0, v));
+const easeInOut = p => p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const easeOutBack = p => 1 + 2.4 * Math.pow(p - 1, 3) + 1.4 * Math.pow(p - 1, 2); // a little overshoot: bubbly
+
+function fadeIntro(intro) {
+  intro.classList.add('leaving');
+  const done = () => intro.remove();
+  intro.addEventListener('transitionend', e => { if (e.target === intro) done(); });
+  setTimeout(done, 400);         // fallback if the transition is skipped
+}
+
+// Lens map for the bubble, drawn once as a square and stretched over the bubble
+// each frame. Inside the glass, pixels sample from nearer the centre (magnified,
+// squeezed back to normal at the rim, like a ball of glass); just outside, from
+// a little further in, so the text there bulges away from the bubble.
+// Red/green = x/y offset, 128 = none.
+function lensMapUrl() {
+  const N = 192, half = N / 2, edge = half / LENS_REACH;   // the bubble's rim, in map pixels
+  const c = document.createElement('canvas');
+  c.width = c.height = N;
+  const x = c.getContext('2d'), im = x.createImageData(N, N), d = im.data;
+  for (let py = 0, i = 0; py < N; py++) for (let px = 0; px < N; px++, i += 4) {
+    const dx = px + 0.5 - half, dy = py + 0.5 - half, dist = Math.hypot(dx, dy), n = dist / edge;
+    let u = 0;                                               // pull toward the centre, 0..1
+    if (n < 1) u = 2 * n * Math.sqrt(1 - n * n);             // glass: peaks at n ≈ 0.7
+    else if (n < LENS_REACH) u = 1.6 * (n - 1) * Math.exp(-4 * (n - 1)) * (1 - (n - 1) / (LENS_REACH - 1)); // soft bulge, gone by the edge
+    const k = dist ? u / dist * edge : 0;
+    d[i] = 128 - dx / edge * k * 127;
+    d[i + 1] = 128 - dy / edge * k * 127;
+    d[i + 2] = 128; d[i + 3] = 255;
+  }
+  x.putImageData(im, 0, 0);
+  return c.toDataURL();
+}
+
+function waveOut(intro, src, cx, cy) {
+  if (RM.matches || !intro.animate) { fadeIntro(intro); return; }
+  const W = innerWidth, H = innerHeight;
+  const maxR = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) + 240; // band fully off-screen
+  const inner = intro.firstElementChild;
+  intro.style.pointerEvents = 'none';
+
+  // the colour band, at CSS-pixel resolution so the bubble's hairlines stay crisp
+  const S = 1;
+  const cv = document.createElement('canvas');
+  cv.id = 'wave';
+  cv.width = Math.ceil(W * S); cv.height = Math.ceil(H * S);
+  const g = cv.getContext('2d');
+  // the sparks: a low-resolution canvas scaled up with hard edges, so every dot is a true pixel
+  const pc = document.createElement('canvas');
+  pc.id = 'wavePx';
+  pc.width = Math.ceil(W / SPARK_PX); pc.height = Math.ceil(H / SPARK_PX);
+  const pg = pc.getContext('2d');
+  const rim = document.createElement('div');
+  rim.id = 'waveRim';
+  document.body.append(cv, pc, rim);
+
+  // sparks: drawn in toward the bubble, then flung out on the wave front
+  const sparks = Array.from({ length: 140 }, () => ({
+    a: Math.random() * Math.PI * 2,
+    gather: 40 + Math.random() * 150,              // how far out they start
+    off: (Math.random() - 0.35) * 70,               // where they ride on the front
+    weight: 0.55 + Math.random() * 0.45,          // how dense its cluster is
+    c: Math.random() < 0.15 ? '#ffffff' : WAVE_COLORS[Math.random() * 8 | 0],
+    life: 0.4 + Math.random() * 0.55,
+    blink: Math.random() * 1000
+  }));
+
+  // the lens (see lensMapUrl): the map sits on a neutral flood, so outside it nothing moves
+  const ir = inner.getBoundingClientRect();
+  const bx = cx - ir.left, by = cy - ir.top;
+  let warpEl = null, lensEl = null, svg = null;
+  if (WARP_OK) {
+    const iw = Math.ceil(ir.width), ih = Math.ceil(ir.height);
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
+    svg.style.position = 'absolute';
+    svg.innerHTML =
+      `<filter id="tdWarp" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="${iw}" height="${ih}" color-interpolation-filters="sRGB">` +
+      `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
+      `<feImage href="${lensMapUrl()}" x="${bx}" y="${by}" width="0" height="0" preserveAspectRatio="none" result="lens"/>` +
+      `<feComposite in="lens" in2="flat" operator="over" result="map"/>` +
+      `<feDisplacementMap in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+    document.body.appendChild(svg);
+    warpEl = svg.querySelector('feDisplacementMap');
+    lensEl = svg.querySelector('feImage');
+  }
+
+  // lean in toward the touch while the bubble swells; the button gathers glow
+  inner.style.transformOrigin = `${bx}px ${by}px`;
+  inner.animate([{ transform: 'scale(1)' }, { transform: 'scale(0.97)' }],
+    { duration: WAVE_BUBBLE, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'forwards' });
+  src.animate([
+    { boxShadow: '0 0 24px rgba(94, 242, 255, .35)' },
+    { boxShadow: '0 0 56px 12px rgba(94, 242, 255, .8)' }
+  ], { duration: WAVE_BUBBLE, easing: 'ease-in', fill: 'forwards' });
+  // the globe seen through the bubble is magnified, then settles as the wave carries you in
+  const globeEl = $('globe');
+  globeEl.style.transformOrigin = `${cx}px ${cy}px`;
+  const globeAnim = globeEl.animate([
+    { transform: 'scale(1)', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+    { transform: 'scale(1.14)', offset: WAVE_BUBBLE / (WAVE_BUBBLE + WAVE_TRAVEL), easing: 'cubic-bezier(0.65, 0, 0.35, 1)' },
+    { transform: 'scale(1)' }
+  ], { duration: WAVE_BUBBLE + WAVE_TRAVEL });
+  globeAnim.onfinish = () => { globeEl.style.transformOrigin = ''; };
+  wakeGlobe(WAVE_BUBBLE + WAVE_TRAVEL + 600);
+
+  // edge colour: comes up as the ring reaches the edges, then lets go
+  const rimAnim = rim.animate([{ opacity: 0 }, { opacity: 0.4, offset: 0.3 }, { opacity: 0 }], {
+    duration: WAVE_TRAVEL * 0.55 + WAVE_LINGER, delay: WAVE_BUBBLE + WAVE_TRAVEL * 0.5,
+    easing: 'ease-out', fill: 'both'
+  });
+  rimAnim.onfinish = () => rim.remove();
+
+  const palette = turn => {
+    if (g.createConicGradient) {
+      const c = g.createConicGradient(turn, cx, cy);
+      WAVE_COLORS.forEach((col, i) => c.addColorStop(i / (WAVE_COLORS.length - 1), col));
+      return c;
+    }
+    const l = g.createLinearGradient(0, 0, W, H);   // older browsers: a diagonal sweep
+    WAVE_COLORS.forEach((col, i) => l.addColorStop(i / (WAVE_COLORS.length - 1), col));
+    return l;
+  };
+  const circle = (r, color, width, a0 = 0, a1 = Math.PI * 2) => {
+    if (r <= 0) return;
+    g.strokeStyle = color; g.lineWidth = width;
+    g.beginPath(); g.arc(cx, cy, r, a0, a1); g.stroke();
+  };
+  const cell = v => Math.round(v / SPARK_PX);
+
+  const t0 = performance.now();
+  let finished = false;
+  function step(now) {
+    if (finished) return;
+    const t = now - t0;
+    const inBubble = t < WAVE_BUBBLE;
+    const q = clamp01(t / WAVE_BUBBLE);                 // bubble progress
+    const p = clamp01((t - WAVE_BUBBLE) / WAVE_TRAVEL); // wave progress
+    // radius: the bubble swells with a slight wobble, then the ring ramps up
+    // from a standstill and accelerates off the screen
+    const R = inBubble ? BUBBLE_R * easeOutBack(q) : BUBBLE_R + (maxR - BUBBLE_R) * Math.pow(p, 2.3);
+    const w = inBubble ? 3 + R * 0.12 : 55 + 165 * p;  // thin glass shell, then a swelling band
+    const turn = -Math.PI / 2 + (q * 0.6 + p * 1.4);
+
+    g.setTransform(S, 0, 0, S, 0, 0);
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+    g.clearRect(0, 0, W, H);
+    if (R > 1) {
+      // 1. the band's shape: a crisp outer edge, a soft tail inside it
+      const r0 = Math.max(0, R - w), r1 = R + (inBubble ? 4 : w * 0.3);
+      const at = r => clamp01((r - r0) / (r1 - r0));
+      const shape = g.createRadialGradient(cx, cy, r0, cx, cy, r1);
+      shape.addColorStop(0, 'rgba(0,0,0,0)');
+      shape.addColorStop(at(R - w * 0.35), `rgba(0,0,0,${inBubble ? 0.25 : 0.55})`);
+      shape.addColorStop(at(R), 'rgba(0,0,0,1)');
+      shape.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = shape;
+      g.fillRect(0, 0, W, H);
+      // 2. fill that shape with the genre colours, slowly turning
+      g.globalCompositeOperation = 'source-in';
+      g.fillStyle = palette(turn);
+      g.fillRect(0, 0, W, H);
+      // 3. chromatic fringe and a bright hairline on the edge
+      g.globalCompositeOperation = 'lighter';
+      // (hairlines on the bubble, a little heavier once it's a wave)
+      const lw = inBubble ? 1 : 1 + 1.5 * p;
+      circle(R + (inBubble ? 2 : 5), 'rgba(94, 242, 255, .4)', lw);
+      circle(R - (inBubble ? 2 : 7), 'rgba(255, 94, 219, .35)', lw);
+      circle(R, 'rgba(255, 255, 255, .55)', inBubble ? 1 : 1.5);
+      // 4. while it's a bubble: a glint of light on the glass
+      if (inBubble) {
+        circle(R * 0.8, `rgba(255, 255, 255, ${(0.6 * q).toFixed(2)})`, 1.25, -2.5, -1.75);
+        circle(R * 0.8, `rgba(255, 255, 255, ${(0.35 * q).toFixed(2)})`, 1.25, -1.6, -1.45);
+      }
+    }
+
+    // pixel sparks: tiny clusters, ordered-dithered against the screen grid, so
+    // they thin out pixel by pixel as they fade, with a dithered streak behind
+    pg.clearRect(0, 0, pc.width, pc.height);
+    const dot = (gx, gy, v) => {
+      if (v > BAYER4[(gy & 3) * 4 + (gx & 3)]) pg.fillRect(gx, gy, 1, 1);
+    };
+    for (const s of sparks) {
+      let r, alpha, dir;
+      if (inBubble) {
+        r = R + 2 + s.gather * (1 - easeInOut(q));     // drawn in toward the rim
+        alpha = Math.min(1, q * 3);
+        dir = 1;                                        // streak points outward
+      } else {
+        const life = p / s.life;
+        if (life >= 1) continue;
+        r = R + s.off;
+        alpha = 1 - life;
+        dir = -1;                                       // streak points back toward the centre
+      }
+      if (r <= 0 || (((t + s.blink) / 90 | 0) % 9) === 0) continue;
+      const v = alpha * s.weight;
+      const cos = Math.cos(s.a), sin = Math.sin(s.a);
+      const gx = cell(cx + cos * r), gy = cell(cy + sin * r);
+      pg.fillStyle = s.c;
+      dot(gx, gy, v * 1.6);                             // a 2×2 grain, thinned by the dither
+      dot(gx + 1, gy, v * 0.7); dot(gx, gy + 1, v * 0.7); dot(gx + 1, gy + 1, v * 0.45);
+      const len = inBubble ? 3 : 3 + p * 6;            // streak lengthens as the wave speeds up
+      for (let k = 1; k <= len; k++) {
+        const rr = r + dir * k * SPARK_PX;
+        dot(cell(cx + cos * rr), cell(cy + sin * rr), v * (1 - k / (len + 1)) * 0.8);
+      }
+    }
+
+    // the bubble is clear glass, so the intro stays whole while it swells. When
+    // it bursts, a hole opens just inside the bright band (the band hides the
+    // cut) and the globe shows through behind the wave
+    const hole = inBubble ? 0 : Math.max(0, R - w * 0.25) * clamp01(p / 0.12);
+    if (hole > 0) {
+      intro.style.clipPath = `path(evenodd, "M0 0H${W}V${H}H0Z M${cx - hole} ${cy}a${hole} ${hole} 0 1 0 ${2 * hole} 0a${hole} ${hole} 0 1 0 ${-2 * hole} 0Z")`;
+    }
+    // the lens grows with the bubble and lets go as it bursts;
+    // ahead of the wave the intro blurs more as it closes in
+    const lensR = inBubble ? Math.max(1, R) : BUBBLE_R;
+    const bulge = lensR * LENS_POWER * (inBubble ? Math.min(1, q * 2.5) : 1 - clamp01(p / 0.2));
+    if (warpEl) {
+      const half = lensR * LENS_REACH;
+      lensEl.setAttribute('x', (bx - half).toFixed(1));
+      lensEl.setAttribute('y', (by - half).toFixed(1));
+      lensEl.setAttribute('width', (2 * half).toFixed(1));
+      lensEl.setAttribute('height', (2 * half).toFixed(1));
+      warpEl.setAttribute('scale', bulge.toFixed(1));
+    }
+    const blur = inBubble ? 0 : easeInOut(p) * 8;
+    inner.style.filter = [warpEl && bulge > 0.5 ? 'url(#tdWarp)' : '', blur > 0.05 ? `blur(${blur.toFixed(1)}px)` : '']
+      .filter(Boolean).join(' ') || 'none';
+
+    if (p < 1) requestAnimationFrame(step);
+    else finish();
+  }
+  function finish() {
+    if (finished) return;
+    finished = true;
+    intro.remove();
+    cv.remove(); pc.remove();
+    if (svg) svg.remove();
+    // the crosshair answers: you're on the dial now
+    if (pingRing.animate) {
+      pingRing.animate(
+        [{ opacity: 0.8, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.4)' }],
+        { duration: 900, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+      );
+    }
+  }
+  requestAnimationFrame(step);
+  setTimeout(finish, WAVE_BUBBLE + WAVE_TRAVEL + 1500); // if frames stall (hidden tab), still finish
+}
+
 /* ---------- boot ---------- */
 loadStations().then(list => {
   stations = list;
@@ -1790,14 +2082,15 @@ loadStations().then(list => {
   label.textContent = `Tune in · ${list.length.toLocaleString()} stations`;
   btn.classList.add('ready');
   btn.disabled = false;
-  btn.onclick = () => {
-    initAudio();
+  btn.onclick = e => {
+    initAudio();                 // must stay inside the click (Safari audio unlock)
     on = true;
-    const intro = $('intro');
-    intro.classList.add('leaving');
-    const done = () => intro.remove();
-    intro.addEventListener('transitionend', e => { if (e.target === intro) done(); });
-    setTimeout(done, 400); // fallback if the transition is skipped
+    // the wave opens from where the button was touched; keyboard: its centre
+    const b = btn.getBoundingClientRect();
+    const fromPointer = e.detail > 0 && e.clientX;
+    waveOut($('intro'), btn,
+      fromPointer ? e.clientX : b.left + b.width / 2,
+      fromPointer ? e.clientY : b.top + b.height / 2);
   };
 });
 </script>
