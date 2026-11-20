@@ -7,7 +7,49 @@
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#02030a">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#02030a">
 <meta name="color-scheme" content="dark">
-<title>TerraDial</title>
+<title>TerraDial: live radio from around the world on a 3D globe</title>
+<!-- search + sharing: what Google, AI tools and link previews show -->
+<meta name="description" content="TerraDial is a free online radio player on a 3D globe. Spin the Earth, line up a city with the crosshair and tune in to thousands of live radio stations worldwide, by genre, with no app or sign-up.">
+<link rel="canonical" href="https://terradial.net/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://terradial.net/">
+<meta property="og:site_name" content="TerraDial">
+<!-- link-preview card: og-image.png must sit next to this file on the server -->
+<meta property="og:image" content="https://terradial.net/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="TerraDial: the pixel globe logo above the words 'Spin the Earth. Tune in to live radio worldwide.'">
+<meta property="og:title" content="TerraDial: live radio from around the world on a 3D globe">
+<meta property="og:description" content="Spin the Earth, line up a city with the crosshair and tune in to live radio. Free, in your browser, no sign-up.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://terradial.net/og-image.png">
+<meta name="twitter:title" content="TerraDial: live radio from around the world on a 3D globe">
+<meta name="twitter:description" content="Spin the Earth, line up a city with the crosshair and tune in to live radio. Free, in your browser, no sign-up.">
+<!-- structured data: tells search engines and AI tools what this site is -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "TerraDial",
+  "url": "https://terradial.net/",
+  "image": "https://terradial.net/og-image.png",
+  "description": "A free online radio player on a 3D globe. Spin the Earth, line up a city with the crosshair and listen to live radio stations from around the world.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any (runs in a web browser)",
+  "browserRequirements": "Requires JavaScript and WebGL",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "Live internet radio from thousands of stations worldwide",
+    "Tune in by spinning an interactive 3D globe",
+    "Filter stations by genre: pop, electronic, rock, hip-hop and R&B, jazz and soul, classical, world and folk, news and talk",
+    "Save favourite stations without an account",
+    "Now-playing song titles where stations provide them",
+    "Random station button for discovering new music"
+  ],
+  "creator": { "@type": "Person", "name": "Mike Morales", "url": "https://moralesmike.com" }
+}
+</script>
 <!-- favicon: the loading globe sprite, frozen on one frame -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2015%2015%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20width%3D%2215%22%20height%3D%2215%22%20rx%3D%223%22%20fill%3D%22%2302030a%22%20shape-rendering%3D%22auto%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%229%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2211%22%20y%3D%223%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%225%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%225%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%226%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%227%22%20width%3D%2213%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%228%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%228%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%229%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%2211%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%227%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%2211%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23112931%22/%3E%3Crect%20x%3D%2211%22%20y%3D%2211%22%20width%3D%222%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%2212%22%20width%3D%229%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%2213%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%235ef2ff%22/%3E%3C/svg%3E">
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA2klEQVR42u1XsRHCMAyUFCqoWCUNU7AB47EBU9CwChXpEqhyF3SyopyxLN+h1vF99H69/QisqNu/oWBN44BfeJ7gEgZ5gktYuAX88nyZAK7Hg/k4yLNziQnUfsDacQ4jBJVLZIB3fjv14ubz/WFa15iozsBOW0x1Zq15P2ciLgO/Uv3aVC21EFsDqeJnujYNqhmF8oHSGpD8oE0fSM311u/bnQLucDmOGYuBWZ2lpqG92zD3jDX1x34R/d+EXrkAAIB4VvOsaRwQa0SzZUilVGr1SsikRWePeP4BSSRijf3YOpAAAAAASUVORK5CYII=">
@@ -231,8 +273,8 @@
     padding: 14px 18px;
     -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   }
-  /* footer: support link on the left, credit on the right, lined up with the panel.
-     The row itself lets drags through to the globe; only the link catches taps. */
+  /* footer: support + about on the left, credit on the right, lined up with the panel.
+     The row itself lets drags through to the globe; only the links catch taps. */
   #footer {
     position: fixed; left: 0; right: 0; margin-inline: auto;
     bottom: calc(4px + env(safe-area-inset-bottom, 0px));
@@ -240,6 +282,7 @@
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     font-size: 11px; color: var(--muted); pointer-events: none;
   }
+  #footer .links { flex: none; display: flex; align-items: center; gap: 14px; }
   #footer .credit {
     min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     padding: 4px 0;               /* room so the link underline isn't clipped */
@@ -256,6 +299,8 @@
   #footer a .ic { width: 14px; height: 14px; }
   /* support link: warm red heart, text stays cyan */
   #footer a.support .ic { color: #ff5e6c; }
+  /* about: there when you look for it, quiet otherwise */
+  #footer a.about { color: var(--muted); }
   /* phones: "♥ Support" — the brand name drops, the full label stays for screen readers */
   @media (max-width: 560px) {
     #footer a.support .sl { display: none; }
@@ -273,13 +318,76 @@
   #footer a:focus-visible { outline: 1.5px solid var(--cyan); outline-offset: 2px; border-radius: 4px; }
   @media (hover: hover) and (pointer: fine) {
     #footer a:hover { color: #8ff6ff; }
+    #footer a.about:hover { color: var(--text); }
     #footer a.author:hover { color: var(--cyan); text-decoration-color: currentColor; }
   }
   /* the smallest phones: tighten so the credit isn't cut off */
   @media (max-width: 359px) {
     #footer { font-size: 10px; gap: 8px; }
+    #footer .links { gap: 10px; }
     #footer a:not(.author) { letter-spacing: 0; gap: 4px; }
     #footer a .ic { width: 12px; height: 12px; }
+  }
+
+  /* about: a native modal dialog. Its text is in the page's HTML, so search
+     engines and AI crawlers read it even while it's closed. */
+  #about {
+    margin: auto; padding: 0;
+    width: min(560px, calc(100% - 32px));
+    max-height: min(84dvh, 760px);
+    color: var(--text); background: rgba(6, 12, 24, 0.96);
+    border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+    overflow: hidden;
+  }
+  #about[open] { display: flex; flex-direction: column; animation: about-in 200ms var(--ease-out); }
+  #about::backdrop {
+    background: rgba(2, 3, 10, .62);
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  }
+  @keyframes about-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+  #about .about-head {
+    flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 10px 10px 22px; border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  #about h2 {
+    font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--cyan);
+    text-shadow: 0 0 10px rgba(94,242,255,.35);
+  }
+  #aboutClose {
+    flex: none; display: grid; place-items: center;
+    width: 40px; height: 40px; padding: 0;
+    border: 0; border-radius: 50%; background: transparent; color: var(--muted);
+    transition: color 150ms ease, transform 160ms var(--ease-out);
+  }
+  #aboutClose svg { width: 18px; height: 18px; }
+  @media (hover: hover) and (pointer: fine) { #aboutClose:hover { color: var(--text); } }
+  #about .about-body {
+    overflow-y: auto; overscroll-behavior: contain;
+    padding: 16px 22px 24px;
+    font-size: 13px; line-height: 1.7; color: #c6d4e1;
+  }
+  #about .lede { color: var(--text); font-size: 14px; }
+  #about h3 {
+    margin: 22px 0 6px; font-size: 12px; font-weight: 600;
+    letter-spacing: .06em; color: var(--text);
+  }
+  #about p + p { margin-top: 10px; }
+  #about ul { list-style: none; }
+  #about li { position: relative; padding-left: 16px; }
+  #about li + li { margin-top: 4px; }
+  #about li::before { content: '·'; position: absolute; left: 4px; color: var(--cyan); }
+  #about a { color: var(--cyan); text-underline-offset: 3px; text-decoration-color: rgba(94,242,255,.4); }
+  #about kbd {
+    display: inline-block; min-width: 20px; padding: 0 5px; margin-right: 6px;
+    font: inherit; font-size: 11px; line-height: 18px; text-align: center; color: var(--text);
+    border: 1px solid var(--line); border-radius: 4px; background: rgba(94,242,255,.06);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #about[open] { animation: intro-fade 160ms ease-out; }
   }
 
   /* status sits on the bottom row, left of the signal meter; wraps rather than
@@ -333,7 +441,8 @@
     100%    { transform: translateX(-50%); }
   }
 
-  /* back, hold and favourite: 40px tap targets that don't grow the row */
+  /* back, hold and favourite: 40px tap targets that don't grow the row.
+     All three sit together on the right, after the station name. */
   .icon-btn {
     flex: none; display: grid; place-items: center;
     width: 40px; height: 40px; margin: -10px -6px; padding: 0;
@@ -343,7 +452,6 @@
   .icon-btn[hidden] { display: none; }
   .icon-btn svg { width: 20px; height: 20px; transition: fill 150ms ease; }
   .icon-btn:focus-visible { outline: 1.5px solid var(--accent); outline-offset: -4px; }
-  #back { margin-left: -12px; }
   #fav { margin-right: -12px; }
   #fav[aria-pressed="true"], #hold[aria-pressed="true"] { color: var(--accent); }
   #fav[aria-pressed="true"] svg { fill: currentColor; }
@@ -589,10 +697,10 @@
 
 <div id="panel">
   <div class="name-row">
+    <div id="name" class="empty">Searching the airwaves</div>
     <button id="back" class="icon-btn" aria-label="Back to previous station" title="Back to previous station (B)" hidden>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
     </button>
-    <div id="name" class="empty">Searching the airwaves</div>
     <button id="hold" class="icon-btn" aria-pressed="false" aria-label="Hold this station" title="Hold this station (L)" hidden>
       <svg class="unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg>
       <svg class="locked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
@@ -616,14 +724,61 @@
 </div>
 
 <footer id="footer">
-  <!-- opens in a new tab so the station keeps playing.
-       Phones show "♥ Support"; the aria-label keeps the full name for screen readers -->
-  <a class="support" href="https://buy.stripe.com/eVq00k29E8WLgbd6dx8so00" target="_blank" rel="noopener" aria-label="Support TerraDial">
-    <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.1 1.6-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.7 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>
-    <span>Support<span class="sl"> TerraDial</span></span>
-  </a>
+  <span class="links">
+    <!-- opens in a new tab so the station keeps playing.
+         Phones show "♥ Support"; the aria-label keeps the full name for screen readers -->
+    <a class="support" href="https://buy.stripe.com/eVq00k29E8WLgbd6dx8so00" target="_blank" rel="noopener" aria-label="Support TerraDial">
+      <svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.1 1.6-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.7 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>
+      <span>Support<span class="sl"> TerraDial</span></span>
+    </a>
+    <!-- a real link to #about, so it works (and can be shared) even before the script runs -->
+    <a class="about" href="#about" aria-haspopup="dialog">About</a>
+  </span>
   <span class="credit">Made with <svg class="heart" viewBox="0 0 24 24" fill="currentColor" aria-label="love" role="img"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.1 1.6-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.7 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg> by <a class="author" href="https://moralesmike.com" target="_blank" rel="noopener">mikemorales</a></span>
 </footer>
+
+<!-- About. Plain HTML on purpose: search engines and AI tools read it straight
+     from the page source, without running any script. -->
+<dialog id="about" aria-labelledby="aboutTitle">
+  <div class="about-head">
+    <h2 id="aboutTitle">About TerraDial</h2>
+    <button id="aboutClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <article class="about-body">
+    <p class="lede">TerraDial is a free online radio player built on a 3D globe. Spin the Earth, line up a city with the crosshair, and you're listening to live radio from that place, from thousands of stations around the world.</p>
+    <p>It works like an old analogue dial: as you drag, static rises and falls, a signal meter shows how close you are, and the station fades in once you land on it. It's a way to hear what the rest of the world is playing right now, from Prague to Lagos to Tokyo.</p>
+
+    <h3>How to listen</h3>
+    <ul>
+      <li>Drag the globe to tune. Let go near a station and the dial clicks onto it.</li>
+      <li>Pick a genre to show only those stations: Pop &amp; Hits, Electronic, Rock, Hip-Hop &amp; R&amp;B, Jazz &amp; Soul, Classical, World &amp; Folk, or News &amp; Talk.</li>
+      <li>Press Random to fly to a station somewhere on Earth.</li>
+      <li>Hold (the lock) keeps the current station playing while you explore the globe.</li>
+      <li>Back (the arrow) returns to the station you were just on.</li>
+      <li>The heart saves a station to Favourites. Favourites are kept in your browser, with no account needed.</li>
+      <li>Where a station shares it, you'll see the song that's playing.</li>
+    </ul>
+
+    <h3>Is TerraDial free?</h3>
+    <p>Yes. There's nothing to install and no sign-up. It runs in any modern web browser, on desktop or phone. If you enjoy it, you can <a href="https://buy.stripe.com/eVq00k29E8WLgbd6dx8so00" target="_blank" rel="noopener">support TerraDial</a>.</p>
+
+    <h3>Where do the stations come from?</h3>
+    <p>The station list comes from <a href="https://www.radio-browser.info" target="_blank" rel="noopener">Radio Browser</a>, a free, community-maintained directory of internet radio. Each stream plays directly from the broadcaster. TerraDial only shows stations that have a location and play in your browser.</p>
+
+    <h3>Keyboard shortcuts</h3>
+    <ul>
+      <li><kbd>M</kbd>Mute or unmute</li>
+      <li><kbd>F</kbd>Save or remove a favourite</li>
+      <li><kbd>L</kbd>Hold or release the station</li>
+      <li><kbd>B</kbd>Back to the previous station</li>
+    </ul>
+
+    <h3>Who made it?</h3>
+    <p>TerraDial is made by <a href="https://moralesmike.com" target="_blank" rel="noopener">Mike Morales</a>.</p>
+  </article>
+</dialog>
 
 <div id="intro">
   <div>
@@ -659,6 +814,25 @@ function setStyle(el, prop, v) {
   cache[prop] = v;
   el.style[prop] = v;
 }
+
+/* ---------- about ----------
+   A native <dialog>: Esc closes it, focus stays inside while it's open, and a
+   tap on the dimmed backdrop closes it too. Visiting the page at #about opens it. */
+const aboutDlg = $('about');
+const aboutLink = document.querySelector('#footer a.about');
+function openAbout() {
+  if (aboutDlg.open || !aboutDlg.showModal) return;
+  aboutDlg.showModal();
+  aboutDlg.querySelector('.about-body').scrollTop = 0;
+}
+aboutLink.addEventListener('click', e => { e.preventDefault(); openAbout(); });
+$('aboutClose').onclick = () => aboutDlg.close();
+// the dialog box itself has no padding, so a click that lands on it is the backdrop
+aboutDlg.addEventListener('click', e => { if (e.target === aboutDlg) aboutDlg.close(); });
+aboutDlg.addEventListener('close', () => {
+  if (location.hash === '#about') history.replaceState(null, '', location.pathname + location.search);
+});
+if (location.hash === '#about') openAbout();
 
 /* ---------- categories ----------
    A station gets the category of its first tag that matches (tags are roughly
@@ -1279,6 +1453,7 @@ function setMuted(v) {
 $('mute').onclick = () => setMuted(!muted);
 addEventListener('keydown', e => {
   if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (aboutDlg.open) return;     // reading About: the letter keys are just keys
   if (e.key === 'm' || e.key === 'M') setMuted(!muted);
   if (genreMenu.contains(document.activeElement)) return;
   if ((e.key === 'f' || e.key === 'F') && current) toggleFav(current);
